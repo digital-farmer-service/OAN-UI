@@ -29,3 +29,6 @@ dist-ssr
 
 coverage/
 .sonar/
+
+# Runtime config (generated per environment)
+public/env-config.js
