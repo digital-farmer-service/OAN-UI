@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+// Vite raw imports: node:fs is polyfilled to a stub by vite-plugin-node-polyfills in this config.
+import entrypointSource from "../../../docker-entrypoint.d/40-env-config.sh?raw";
+import envExampleSource from "../../../public/env-config.example.js?raw";
+
 // The container writes /env-config.js, which defines window.__ENV__ before the app loads.
 // `environment` reads it at import time, so each case stubs window and re-imports the module.
 
@@ -152,5 +156,70 @@ describe("environment Sunbird flags (SUNBIRD_TELEMETRY_ENABLED / SUNBIRD_TELEMET
 		const flags = await loadFlags({ VITE_API_URL: "", SUNBIRD_TELEMETRY_HOST: "  " });
 
 		expect(flags.sunbirdTelemetryHost).toBe("");
+	});
+});
+
+// Google Analytics keys (doc 80 §8.4). GA is kept on by default (prod parity); QA/dev set
+// GA_ENABLED=false. GA_MEASUREMENT_ID must match /^G-[A-Z0-9]{6,}$/ after trimming; an invalid
+// value gives "" (the GA module then stays disabled), an unset/empty one gives the prod id.
+type GaFlags = { gaEnabled: boolean; gaMeasurementId: string };
+
+async function loadGaFlags(runtimeEnv: unknown): Promise<GaFlags> {
+	return (await loadEnvironment(runtimeEnv)) as unknown as GaFlags;
+}
+
+describe("environment GA flags (GA_ENABLED / GA_MEASUREMENT_ID)", () => {
+	it.each([
+		["window.__ENV__ undefined", undefined],
+		["keys missing", {}],
+		["keys empty", { GA_ENABLED: "", GA_MEASUREMENT_ID: "" }],
+		["keys whitespace-only", { GA_ENABLED: "  ", GA_MEASUREMENT_ID: " " }],
+		["GA_ENABLED unrecognised", { GA_ENABLED: "no" }],
+		["GA_ENABLED 'true'", { GA_ENABLED: " TRUE " }]
+	])("defaults to enabled with G-SV0TLS2S41 when %s", async (_label, runtimeEnv) => {
+		const flags = await loadGaFlags(runtimeEnv);
+
+		expect(flags.gaEnabled).toBe(true);
+		expect(flags.gaMeasurementId).toBe("G-SV0TLS2S41");
+	});
+
+	it.each(["false", " FALSE ", "False"])("'%s' disables GA", async (value) => {
+		const flags = await loadGaFlags({ GA_ENABLED: value });
+
+		expect(flags.gaEnabled).toBe(false);
+	});
+
+	it("a valid GA_MEASUREMENT_ID override is trimmed and used", async () => {
+		const flags = await loadGaFlags({ GA_MEASUREMENT_ID: "  G-ABC1234XYZ " });
+
+		expect(flags.gaMeasurementId).toBe("G-ABC1234XYZ");
+	});
+
+	it.each([
+		'x"><script>alert(1)</script>',
+		"G-SV0TLS2S41&l=evil",
+		"UA-12345-1",
+		"g-sv0tls2s41",
+		"G-AB12"
+	])("an invalid GA_MEASUREMENT_ID (%s) gives ''", async (value) => {
+		const flags = await loadGaFlags({ GA_MEASUREMENT_ID: value });
+
+		expect(flags.gaMeasurementId).toBe("");
+	});
+});
+
+describe("GA keys are plumbed through the runtime env config", () => {
+	it("docker-entrypoint.d/40-env-config.sh writes GA_ENABLED and GA_MEASUREMENT_ID via json_str", () => {
+		for (const key of ["GA_ENABLED", "GA_MEASUREMENT_ID"]) {
+			expect(entrypointSource).toMatch(
+				new RegExp(`^\\s*${key}: \\$\\(json_str "\\$\\{${key}:-\\}"\\),?\\s*$`, "m")
+			);
+		}
+	});
+
+	it("public/env-config.example.js lists GA_ENABLED and GA_MEASUREMENT_ID", () => {
+		for (const key of ["GA_ENABLED", "GA_MEASUREMENT_ID"]) {
+			expect(envExampleSource).toMatch(new RegExp(`^\\s*${key}: "",?\\s*$`, "m"));
+		}
 	});
 });
