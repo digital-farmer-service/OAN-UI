@@ -70,3 +70,87 @@ describe("environment defaults", () => {
 		});
 	});
 });
+
+// Telemetry flags (doc 80 §4.3). Values come from window.__ENV__ as strings. "true"/"false" are
+// matched case-insensitively after trimming; anything else falls back to the default.
+type TelemetryFlags = {
+	telemetryEnabled: boolean;
+	feedbackEnabled: boolean;
+	sunbirdTelemetryEnabled: boolean;
+	sunbirdTelemetryHost: string;
+};
+
+async function loadFlags(runtimeEnv: unknown): Promise<TelemetryFlags> {
+	return (await loadEnvironment(runtimeEnv)) as unknown as TelemetryFlags;
+}
+
+describe("environment relay flags (TELEMETRY_ENABLED / FEEDBACK_ENABLED)", () => {
+	it.each([
+		["window.__ENV__ undefined", undefined],
+		["keys missing", {}],
+		["keys empty", { TELEMETRY_ENABLED: "", FEEDBACK_ENABLED: "" }],
+		["keys whitespace-only", { TELEMETRY_ENABLED: "  ", FEEDBACK_ENABLED: " " }],
+		["keys 'false'", { TELEMETRY_ENABLED: "false", FEEDBACK_ENABLED: " FALSE " }],
+		["keys unrecognised", { TELEMETRY_ENABLED: "yes", FEEDBACK_ENABLED: "1" }]
+	])("default off in this fork when %s", async (_label, runtimeEnv) => {
+		const flags = await loadFlags(runtimeEnv);
+
+		expect(flags.telemetryEnabled).toBe(false);
+		expect(flags.feedbackEnabled).toBe(false);
+	});
+
+	it.each(["true", "TRUE", " True ", "\ttrue\n"])("'%s' enables both", async (value) => {
+		const flags = await loadFlags({ TELEMETRY_ENABLED: value, FEEDBACK_ENABLED: value });
+
+		expect(flags.telemetryEnabled).toBe(true);
+		expect(flags.feedbackEnabled).toBe(true);
+	});
+
+	it("parses the two relay flags independently", async () => {
+		const flags = await loadFlags({ TELEMETRY_ENABLED: "true", FEEDBACK_ENABLED: "false" });
+
+		expect(flags.telemetryEnabled).toBe(true);
+		expect(flags.feedbackEnabled).toBe(false);
+	});
+});
+
+describe("environment Sunbird flags (SUNBIRD_TELEMETRY_ENABLED / SUNBIRD_TELEMETRY_HOST)", () => {
+	it.each([
+		["window.__ENV__ undefined", undefined],
+		["key missing", {}],
+		["key empty", { SUNBIRD_TELEMETRY_ENABLED: "" }],
+		["key unrecognised", { SUNBIRD_TELEMETRY_ENABLED: "no" }],
+		["key 'true'", { SUNBIRD_TELEMETRY_ENABLED: " TRUE " }]
+	])("sunbirdTelemetryEnabled defaults on when %s", async (_label, runtimeEnv) => {
+		const flags = await loadFlags(runtimeEnv);
+
+		expect(flags.sunbirdTelemetryEnabled).toBe(true);
+	});
+
+	it.each(["false", " FALSE ", "False"])("'%s' disables Sunbird telemetry", async (value) => {
+		const flags = await loadFlags({ SUNBIRD_TELEMETRY_ENABLED: value });
+
+		expect(flags.sunbirdTelemetryEnabled).toBe(false);
+	});
+
+	it("sunbirdTelemetryHost defaults to <apiUrl>/observability-service", async () => {
+		const flags = await loadFlags({ VITE_API_URL: "https://api.example.test/" });
+
+		expect(flags.sunbirdTelemetryHost).toBe("https://api.example.test/observability-service");
+	});
+
+	it("sunbirdTelemetryHost override is trimmed and loses trailing slashes", async () => {
+		const flags = await loadFlags({
+			VITE_API_URL: "https://api.example.test",
+			SUNBIRD_TELEMETRY_HOST: "  https://obs.example.test/observability-service//  "
+		});
+
+		expect(flags.sunbirdTelemetryHost).toBe("https://obs.example.test/observability-service");
+	});
+
+	it("sunbirdTelemetryHost is empty when neither apiUrl nor an override is set (no dev fallback)", async () => {
+		const flags = await loadFlags({ VITE_API_URL: "", SUNBIRD_TELEMETRY_HOST: "  " });
+
+		expect(flags.sunbirdTelemetryHost).toBe("");
+	});
+});
