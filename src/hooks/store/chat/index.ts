@@ -83,6 +83,20 @@ export type QuickAction = {
 	prompt: string;
 };
 
+export type MessageFeedback = "like" | "dislike";
+
+/** A failed question can be retried at most this many times. */
+export const MAX_RETRIES = 2;
+
+export function canRetryMessage(message: ChatMessage): boolean {
+	return (
+		message.type === "card" &&
+		!!message.isError &&
+		!!message.failedUserText &&
+		(message.retryCount ?? 0) < MAX_RETRIES
+	);
+}
+
 type FetchLocationOptions = {
 	trackBrowserDecision?: boolean;
 };
@@ -99,7 +113,7 @@ type ChatStore = {
 	isFetchingSuggestions: boolean;
 	sessionId: string | null;
 	initializeSession: (user: any) => Promise<void>;
-	sendText: (text: string, language: string, t?: any) => Promise<void>;
+	sendText: (text: string, language: string, t?: any, retryCount?: number) => Promise<void>;
 	sendAudio: (blob: Blob, sessionId: string, language: string) => Promise<void>;
 	sendImage: (imageFile: File, language: string, t?: any) => Promise<void>;
 	sendQuickAction: (id: string, language: string, t?: any) => void;
@@ -115,11 +129,16 @@ type ChatStore = {
 	fetchSuggestionsForMessage: (messageId: string) => Promise<void>;
 	generateQuickActions: (t: any) => void;
 	playTTS: (text: string, language: string, messageId: string) => Promise<void>;
+	/** Listen-button tap: ignored while loading, stops while playing, otherwise plays (from cache when possible). */
+	toggleTTS: (text: string, language: string, messageId: string) => Promise<void>;
 	pauseTTS: () => void;
 	resumeTTS: () => Promise<void>;
 	stopTTS: () => void;
 	currentlyPlayingId: string | null;
-	ttsStatus: "playing" | "paused" | "stopped";
+	ttsStatus: "loading" | "playing" | "paused" | "stopped";
+	messageFeedback: Record<string, MessageFeedback | undefined>;
+	toggleLike: (messageId: string, t?: any) => Promise<void>;
+	copyMessage: (messageId: string, t?: any) => Promise<void>;
 	submitMessageFeedback: (
 		messageId: string,
 		isPositive: boolean,
@@ -265,7 +284,8 @@ function makeAssistantMessage(
 	qid?: string,
 	failedUserText?: string,
 	failedLanguage?: string,
-	responseLanguage?: LanguageCode
+	responseLanguage?: LanguageCode,
+	retryCount?: number
 ): ChatMessage {
 	return {
 		id: crypto.randomUUID(),
@@ -278,7 +298,8 @@ function makeAssistantMessage(
 		isError,
 		failedUserText,
 		failedLanguage,
-		responseLanguage
+		responseLanguage,
+		retryCount
 	};
 }
 
@@ -325,6 +346,13 @@ function makeImageMessage(imageUrl: string, caption?: string): ChatMessage {
 
 import { playTTS as playTTSHelper, pauseAudio, resumeAudio, stopAudio } from "@/lib/audio-utils";
 
+// Per-message TTS Blob URLs (replay without another /api/tts call); revoked on clearChat.
+const ttsUrlCache = new Map<string, string>();
+// Bumped on every play/stop so callbacks of a superseded playback do not touch the store.
+let ttsPlayToken = 0;
+// Messages whose like was already sent to the server (the like toggle itself is local).
+const likeSubmittedIds = new Set<string>();
+
 let locationFetchPromise: Promise<void> | null = null;
 let hasResolvedLocationAttempt = false;
 
@@ -342,6 +370,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	toast: null,
 	currentlyPlayingId: null,
 	ttsStatus: "stopped",
+	messageFeedback: {},
 	weatherForecastMatches: [],
 	notifications: [],
 	isFetchingNotifications: false,
@@ -538,7 +567,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	},
 	stopListening: () => set(() => ({ isListening: false })),
 
-	clearChat: () =>
+	clearChat: () => {
+		get().stopTTS();
+		ttsUrlCache.forEach((url) => URL.revokeObjectURL(url));
+		ttsUrlCache.clear();
+		likeSubmittedIds.clear();
 		set(() => ({
 			messages: [],
 			draft: "",
@@ -547,10 +580,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			isInputLocked: false,
 			isListening: false,
 			isTranscribing: false,
-			isFetchingSuggestions: false
-		})),
+			isFetchingSuggestions: false,
+			messageFeedback: {}
+		}));
+	},
 
-	sendText: async (text, language, t) => {
+	sendText: async (text, language, t, retryCount = 0) => {
 		const trimmed = text.trim();
 		if (!trimmed) return;
 		const safeText = neutralizeHtmlMarkup(trimmed);
@@ -675,7 +710,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 							backendQid,
 							safeText,
 							language,
-							responseLanguage
+							responseLanguage,
+							retryCount
 						);
 						if (!backendQid) warnMissingBackendQid("text chat error", message.id);
 						return [...state.messages, message];
@@ -999,6 +1035,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			(m) => m.type === "card" && m.isError && (m as any).failedUserText
 		);
 		if (lastErrorIdx === -1) return;
+		if (!canRetryMessage(messages[lastErrorIdx]!)) return;
 
 		const errorMsg = messages[lastErrorIdx] as any;
 		const textToRetry = errorMsg.failedUserText;
@@ -1022,8 +1059,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			return { messages: msgs };
 		});
 
-		// Re-send the message
-		get().sendText(textToRetry, langToUse, t);
+		// Re-send the message, carrying the retry count over to a new error card
+		get().sendText(textToRetry, langToUse, t, (errorMsg.retryCount ?? 0) + 1);
 	},
 
 	generateQuickActions: (t) => {
@@ -1149,20 +1186,47 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		const { sessionId } = get();
 		if (!sessionId) return;
 
-		set({ currentlyPlayingId: messageId, ttsStatus: "playing" });
+		const token = ++ttsPlayToken;
+		const isCurrent = () => token === ttsPlayToken;
+		set({ currentlyPlayingId: messageId, ttsStatus: "loading" });
 
 		try {
-			await playTTSHelper(text, language, sessionId, () => {
-				// Only reset if it's the SAME message that just finished
-				if (get().currentlyPlayingId === messageId) {
-					set({ currentlyPlayingId: null, ttsStatus: "stopped" });
+			const started = await playTTSHelper(
+				text,
+				language,
+				sessionId,
+				() => {
+					// Only reset if this playback was not superseded by a newer play/stop
+					if (isCurrent()) {
+						set({ currentlyPlayingId: null, ttsStatus: "stopped" });
+					}
+				},
+				{
+					cachedUrl: ttsUrlCache.get(messageId),
+					onAudioUrl: (url) => ttsUrlCache.set(messageId, url)
 				}
-			});
+			);
+			if (started && isCurrent() && get().ttsStatus === "loading") {
+				set({ ttsStatus: "playing" });
+			}
 		} catch (error) {
 			console.error("TTS Playback failed:", error);
+			if (!isCurrent()) return;
 			set({ currentlyPlayingId: null, ttsStatus: "stopped" });
 			set({ toast: { message: "Error Playing Audio. Please try again.", type: "error" } });
 		}
+	},
+
+	toggleTTS: async (text, language, messageId) => {
+		const { currentlyPlayingId, ttsStatus } = get();
+		if (currentlyPlayingId === messageId) {
+			if (ttsStatus === "loading") return;
+			if (ttsStatus === "playing" || ttsStatus === "paused") {
+				get().stopTTS();
+				return;
+			}
+		}
+		await get().playTTS(text, language, messageId);
 	},
 
 	pauseTTS: () => {
@@ -1180,6 +1244,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	},
 
 	stopTTS: () => {
+		ttsPlayToken++;
 		stopAudio();
 		set({ currentlyPlayingId: null, ttsStatus: "stopped" });
 	},
@@ -1214,6 +1279,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				question_text: questionText,
 				answer_text: responseText
 			});
+			if (!isPositive) {
+				set((state) => ({ messageFeedback: { ...state.messageFeedback, [messageId]: "dislike" } }));
+			}
 
 			// Logic from user code: show success toast
 			// if (isPositive) {
@@ -1224,6 +1292,56 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		} catch (error) {
 			console.error("Feedback telemetry error:", error);
 			set({ toast: { message: "Failed to submit feedback. Please try again.", type: "error" } });
+		}
+	},
+
+	toggleLike: async (messageId, t) => {
+		if (get().messageFeedback[messageId] === "like") {
+			set((state) => {
+				const { [messageId]: _removed, ...rest } = state.messageFeedback;
+				return { messageFeedback: rest };
+			});
+			return;
+		}
+
+		set((state) => ({
+			messageFeedback: { ...state.messageFeedback, [messageId]: "like" },
+			toast: {
+				message: t
+					? String(t("toast.feedbackThankYou.title"))
+					: "Thank you for your feedback! We're glad this response was helpful.",
+				type: "success"
+			}
+		}));
+
+		// The server submit is one-shot per message; toggling off and on again stays local.
+		if (likeSubmittedIds.has(messageId)) return;
+		likeSubmittedIds.add(messageId);
+		await get().submitMessageFeedback(messageId, true);
+	},
+
+	copyMessage: async (messageId, t) => {
+		const msg = get().messages.find((m) => m.id === messageId);
+		if (!msg || msg.type !== "card") return;
+
+		try {
+			await navigator.clipboard.writeText(msg.body);
+			set({
+				toast: {
+					message: t ? String(t("toast.messageCopied.title")) : "Message Copied",
+					type: "success"
+				}
+			});
+		} catch (error) {
+			console.error("Copy to clipboard failed:", error);
+			set({
+				toast: {
+					message: t
+						? String(t("toast.copyFailed"))
+						: "Could not copy the message. Please try again.",
+					type: "error"
+				}
+			});
 		}
 	}
 }));

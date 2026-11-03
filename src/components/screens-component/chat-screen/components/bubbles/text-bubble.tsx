@@ -11,10 +11,11 @@ export function TextBubble({ message }: { message: TextMessage }) {
 
 	return (
 		<div
+			data-bubble={isUser ? "user" : "assistant"}
 			className={cn(
 				"max-w-full rounded-[20px] px-4 py-3 text-base shadow-sm sm:max-w-[85%]",
 				isUser
-					? "rounded-tr-md bg-[var(--secondary)] text-black dark:bg-[var(--userBubble-dark)] dark:text-[var(--userBubbleText-dark)]"
+					? "rounded-2xl rounded-tr-none bg-primary text-primary-foreground dark:bg-[var(--userBubble-dark)] dark:text-[var(--userBubbleText-dark)]"
 					: "rounded-tl-md border bg-card text-card-foreground dark:bg-[var(--aiBubble-dark)] dark:text-[var(--aiBubbleText-dark)] dark:border-[var(--border-dark)]"
 			)}
 		>

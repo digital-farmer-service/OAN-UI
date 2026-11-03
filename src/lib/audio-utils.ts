@@ -289,6 +289,8 @@ let onPlaybackEnd: (() => void) | null = null;
  * Stops any currently playing audio
  */
 export const stopAudio = () => {
+  // Invalidate any /api/tts request still in flight so it does not start playing after a stop.
+  lastRequestId++;
   if (currentAudio) {
     // const src = currentAudio.src;
     currentAudio.pause();
@@ -321,48 +323,74 @@ export const resumeAudio = async () => {
 };
 
 /**
- * Fetches and plays TTS audio for a given text
+ * The Listen button label: constant for every TTS status (loading/playing/stopped).
  */
-export const playTTS = async (text: string, language: string, sessionId: string, onEnd?: () => void) => {
+export const getTtsLabelKey = (_status: string): string => "Listen";
+
+export interface PlayTTSOptions {
+  /** A Blob URL from an earlier playback of the same message: replayed without calling /api/tts. */
+  cachedUrl?: string;
+  /** Called with the Blob URL created for freshly fetched audio, so the caller can cache it. */
+  onAudioUrl?: (url: string) => void;
+}
+
+/**
+ * Fetches (or reuses a cached Blob URL) and plays TTS audio for a given text.
+ * Resolves true once audio has started, false when superseded by a newer request or a stop.
+ */
+export const playTTS = async (
+  text: string,
+  language: string,
+  sessionId: string,
+  onEnd?: () => void,
+  options: PlayTTSOptions = {}
+): Promise<boolean> => {
+  // Stop previous audio immediately (this also invalidates any earlier in-flight request)
+  stopAudio();
   const requestId = ++lastRequestId;
   
   try {
-    // Stop previous audio immediately
-    stopAudio();
     onPlaybackEnd = onEnd || null;
 
-    const response = await apiService.getTranscript(sessionId, text, language);
-    
-    // If a new request has started since we began fetching, don't play this one
-    if (requestId !== lastRequestId) return;
+    let audioUrl = options.cachedUrl;
+    if (!audioUrl) {
+      const response = await apiService.getTranscript(sessionId, text, language);
 
-    if (response.data.status === 'success' && response.data.audio_data) {
-      const audioContent = response.data.audio_data;
-      // Convert base64 to binary and create a blob URL (CSP-friendly)
-      const binaryString = atob(audioContent);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const audioBlob = new Blob([bytes], { type: 'audio/wav' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      currentAudio = new Audio(audioUrl);
-      currentAudio.onended = () => {
+      // If a new request has started since we began fetching, don't play this one
+      if (requestId !== lastRequestId) return false;
+
+      if (response.data.status === 'success' && response.data.audio_data) {
+        const audioContent = response.data.audio_data;
+        // Convert base64 to binary and create a blob URL (CSP-friendly)
+        const binaryString = atob(audioContent);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const audioBlob = new Blob([bytes], { type: 'audio/wav' });
+        audioUrl = URL.createObjectURL(audioBlob);
+        options.onAudioUrl?.(audioUrl);
+      } else {
+        console.error("Failed to get TTS audio data");
         if (onPlaybackEnd) {
           onPlaybackEnd();
           onPlaybackEnd = null;
         }
-        currentAudio = null;
-      };
-      await currentAudio.play();
-    } else {
-      console.error("Failed to get TTS audio data");
+        return false;
+      }
+    }
+
+    const audio = new Audio(audioUrl);
+    currentAudio = audio;
+    audio.onended = () => {
       if (onPlaybackEnd) {
         onPlaybackEnd();
         onPlaybackEnd = null;
       }
-    }
+      currentAudio = null;
+    };
+    await audio.play();
+    return requestId === lastRequestId;
   } catch (error) {
     console.error("Error playing TTS:", error);
     if (onPlaybackEnd) {

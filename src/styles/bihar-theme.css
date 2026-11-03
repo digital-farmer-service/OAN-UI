@@ -1,0 +1,154 @@
+/*
+ * Bihar Krishi theme layer (doc 70 §2, P4.8.1).
+ *
+ * Imported once from global.css (right after the Tailwind imports: CSS ignores an @import placed
+ * after other rules). These rules are unlayered, so they beat the upstream `@layer base` rules; the
+ * token blocks use `:root:root` / `:root.dark` so they also beat the upstream `:root` / `.dark`
+ * blocks that come later in global.css.
+ * The OLD palette comes from the legacy app (80adef9 src/index.css, tailwind.config.ts `farm.*`).
+ * config.json still drives primary/secondary/accent/background/foreground/border inline through
+ * ConfigProvider; this file sets everything the config does not reach.
+ */
+
+/* Tailwind palette remap: hard-coded indigo-* / amber-* utilities follow the farm green / gold. */
+@theme {
+	--color-indigo-50: #f0f7f2;
+	--color-indigo-100: #dcede2;
+	--color-indigo-200: #bbdbc7;
+	--color-indigo-300: #8fc2a3;
+	--color-indigo-400: #5fa37c;
+	--color-indigo-500: #3f8760;
+	--color-indigo-600: #2f6e4c;
+	--color-indigo-700: #2d5d41;
+	--color-indigo-800: #244a35;
+	--color-indigo-900: #1e3d2c;
+	--color-indigo-950: #102219;
+
+	--color-amber-50: #fefaec;
+	--color-amber-100: #fcf0c9;
+	--color-amber-200: #f9e08e;
+	--color-amber-300: #f5cf5e;
+	--color-amber-400: #f1c24c;
+	--color-amber-500: #e5a92a;
+	--color-amber-600: #c9861c;
+	--color-amber-700: #a2641a;
+	--color-amber-800: #854f1c;
+	--color-amber-900: #6e411b;
+	--color-amber-950: #3f220b;
+}
+
+:root:root {
+	/* Brand ramp (green around #2D5D41) and honey ramp (gold around #F1C24C). */
+	--brand-50: #f0f7f2;
+	--brand-100: #dcede2;
+	--brand-200: #bbdbc7;
+	--brand-300: #8fc2a3;
+	--brand-400: #5fa37c;
+	--brand-500: #3f8760;
+	--brand-600: #2f6e4c;
+	--brand-700: #2d5d41;
+	--brand-800: #244a35;
+	--brand-900: #1e3d2c;
+	--brand-950: #102219;
+
+	--honey-50: #fefaec;
+	--honey-100: #fcf0c9;
+	--honey-200: #f9e08e;
+	--honey-300: #f5cf5e;
+	--honey-400: #f1c24c;
+	--honey-500: #e5a92a;
+	--honey-600: #c9861c;
+	--honey-700: #a2641a;
+	--honey-800: #854f1c;
+	--honey-900: #6e411b;
+	--honey-950: #3f220b;
+
+	/* Old light tokens (index.css :root). */
+	--primary-foreground: hsl(48 30% 96%);
+	--card: hsl(48 30% 98%);
+	--card-foreground: hsl(145 35% 15%);
+	--popover: hsl(48 30% 96%);
+	--popover-foreground: hsl(145 35% 15%);
+	--secondary-foreground: hsl(145 35% 15%);
+	--muted: hsl(48 20% 90%);
+	--muted-foreground: hsl(145 25% 35%);
+	--accent-foreground: hsl(145 35% 27%);
+	--destructive: hsl(0 84.2% 60.2%);
+	--destructive-foreground: hsl(48 30% 96%);
+	--input: hsl(48 20% 88%);
+	--ring: hsl(145 35% 27%);
+	--text: hsl(145 35% 15%);
+	--radius: 0.75rem;
+
+	--sidebar: hsl(48 30% 96%);
+	--sidebar-foreground: hsl(145 35% 15%);
+	--sidebar-primary: hsl(145 35% 27%);
+	--sidebar-primary-foreground: hsl(48 30% 96%);
+	--sidebar-accent: hsl(48 20% 90%);
+	--sidebar-accent-foreground: hsl(145 35% 15%);
+	--sidebar-border: hsl(48 20% 88%);
+	--sidebar-ring: hsl(145 35% 27%);
+
+	/* Like (active) state, old .like-active. */
+	--like-bg: hsl(48 97% 63%);
+	--like-text: hsl(41 100% 16%);
+	--like-bg-hover: hsl(43 85% 62%);
+}
+
+:root.dark {
+	/* Old dark tokens (index.css .dark). */
+	--primary-foreground: hsl(48 30% 96%);
+	--card: hsl(165 15% 17%);
+	--card-foreground: hsl(48 30% 96%);
+	--popover: hsl(165 15% 15%);
+	--popover-foreground: hsl(48 30% 96%);
+	--secondary-foreground: hsl(48 30% 96%);
+	--muted: hsl(165 15% 20%);
+	--muted-foreground: hsl(48 20% 80%);
+	--accent-foreground: hsl(165 15% 15%);
+	--destructive: hsl(0 62.8% 30.6%);
+	--destructive-foreground: hsl(48 30% 96%);
+	--input: hsl(165 15% 25%);
+	--ring: hsl(145 35% 45%);
+	--text: hsl(48 30% 96%);
+
+	--sidebar: hsl(165 15% 15%);
+	--sidebar-foreground: hsl(48 30% 96%);
+	--sidebar-primary: hsl(145 35% 45%);
+	--sidebar-primary-foreground: hsl(165 15% 15%);
+	--sidebar-accent: hsl(165 15% 20%);
+	--sidebar-accent-foreground: hsl(48 30% 96%);
+	--sidebar-border: hsl(165 15% 25%);
+	--sidebar-ring: hsl(145 35% 45%);
+}
+
+/* System font stack at 16px (overrides the Poppins re-set in global.css @layer base). */
+html {
+	font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+		"Noto Sans Devanagari", sans-serif;
+	font-size: var(--font-size-base, 1rem);
+}
+
+/* Send "tab" when a message can be sent: solid primary, white send icon. */
+.brand-gradient {
+	background: var(--primary);
+}
+
+.brand-gradient img {
+	filter: brightness(0) invert(1);
+}
+
+/* Like (active): old yellow pill. */
+.like-active {
+	background-color: var(--like-bg);
+	color: var(--like-text);
+}
+
+.like-active:hover {
+	background-color: var(--like-bg-hover);
+}
+
+/* User bubble: primary fill with readable text (the prose wrapper would otherwise set grey). */
+[data-bubble="user"] .prose {
+	color: inherit;
+}

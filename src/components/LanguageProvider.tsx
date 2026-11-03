@@ -10,7 +10,7 @@ import kn from '../../translations/kn.json';
 import ml from '../../translations/ml.json';
 import as_ from '../../translations/as.json';
 import mai from '../../translations/mai.json';
-import { DEFAULT_LANGUAGE } from './screens-component/chat-screen/config';
+import { DEFAULT_LANGUAGE, LANGUAGES } from './screens-component/chat-screen/config';
 import { trackLanguageChange } from '../lib/analytics/ga';
 
 type LanguageCode = 'hi' | 'en' | 'bn' | 'te' | 'mr' | 'ta' | 'gu' | 'kn' | 'ml' | 'as' | 'mai';
@@ -29,8 +29,22 @@ const translations: Record<LanguageCode, TranslationObject> = { hi, en, bn, te, 
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const LEGACY_LANGUAGE_KEY = 'language';
+
+// The old app stored the language under `localStorage.language`. Copy an enabled code into
+// `app_language` once (only when it is unset), then drop the legacy key so it is never re-applied.
+const migrateLegacyLanguage = () => {
+  const legacy = localStorage.getItem(LEGACY_LANGUAGE_KEY);
+  if (legacy === null) return;
+  if (!localStorage.getItem('app_language') && Object.prototype.hasOwnProperty.call(LANGUAGES, legacy)) {
+    localStorage.setItem('app_language', legacy);
+  }
+  localStorage.removeItem(LEGACY_LANGUAGE_KEY);
+};
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
+    migrateLegacyLanguage();
     const saved = localStorage.getItem('app_language');
     return (saved as LanguageCode) || DEFAULT_LANGUAGE;
   });

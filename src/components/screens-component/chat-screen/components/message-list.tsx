@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageChrome } from "./message-chrome";
 import { ChatMessage } from "./bubbles/chat-types";
 import { Bubble } from "./bubbles";
-import { AILoader } from "./ai-loader";
+import { TypingDots } from "@/bihar/typing-dots";
 
 type MessageListProps = {
 	messages: ChatMessage[];
@@ -42,7 +42,7 @@ export function MessageList(props: MessageListProps) {
 				))}
 				{props.isAssistantTyping && props.messages[props.messages.length - 1]?.role !== "assistant" ? (
 					<MessageChrome role="assistant" showLabel={true}>
-						<AILoader className="px-1" />
+						<TypingDots />
 					</MessageChrome>
 				) : null}
 			</div>
