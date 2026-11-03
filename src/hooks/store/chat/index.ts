@@ -3,7 +3,7 @@ import type {
 	ChatMessage,
 	TextMessage
 } from "@/components/screens-component/chat-screen/components/bubbles/chat-types";
-import { LANGUAGES, type LanguageCode } from "@/components/screens-component/chat-screen/config";
+import { DEFAULT_LANGUAGE, LANGUAGES, type LanguageCode } from "@/components/screens-component/chat-screen/config";
 
 import {
 	fetchSuggestions,
@@ -501,7 +501,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			// Keep fallback visitor id.
 		}
 
-		const lang = localStorage.getItem("app_language") || "en";
+		const storedLang = localStorage.getItem("app_language");
+		const lang = storedLang && Object.prototype.hasOwnProperty.call(LANGUAGES, storedLang) ? storedLang : DEFAULT_LANGUAGE;
 		const seenRaw = localStorage.getItem(SEEN_NOTIFICATIONS_KEY);
 		const seen_message_ids: string[] = seenRaw ? JSON.parse(seenRaw) : [];
 
