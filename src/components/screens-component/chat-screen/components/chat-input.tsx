@@ -315,7 +315,7 @@ export function ChatInput({
 	if (recordingState !== "idle") {
 		return (
 			<div className="relative bg-[#FFFFFF] dark:bg-[var(--inputBg-dark)] backdrop-blur supports-[backdrop-filter]:bg-[#FFFFFF] dark:supports-[backdrop-filter]:bg-[var(--inputBg-dark)]">
-				<div className="mx-auto w-full max-w-2xl px-2 py-2 sm:px-4">
+				<div className="mx-auto w-full lg:w-1/2 px-2 py-2 sm:px-4">
 					<RecordingControls
 						state={recordingState}
 						duration={recordingDuration}
@@ -457,7 +457,7 @@ export function ChatInput({
 			</Dialog>
 
 
-			<div className="mx-auto w-full max-w-2xl px-2 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] sm:px-4">
+			<div className="mx-auto w-full lg:w-1/2 px-2 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] sm:px-4">
 				<Suggestions
 					suggestions={suggestions}
 					onSuggestionClick={(text) => onSuggestionClick?.(text)}

@@ -9,10 +9,11 @@ import chatHeaderSource from "@/components/screens-component/layouts/chat-header
 import messageListSource from "@/components/screens-component/chat-screen/components/message-list.tsx?raw";
 import chatInputSource from "@/components/screens-component/chat-screen/components/chat-input.tsx?raw";
 
-// Owner dev review §2/§3, compared with the old UI (80adef9): the header bar is full width (old
-// Layout.tsx), the message list spans the viewport with `px-2`/`px-4` padding (old ScrollArea,
-// bot messages `w-full max-w-full`), and the chat input is centred at `max-w-2xl` (old input
-// wrapper `max-w-2xl mx-auto`). No `max-w-3xl` column anywhere in these three files.
+// Owner dev review §2/§3 (width decision, replaces the earlier max-w-2xl input): the header bar is
+// full width; at `lg` (>=1024px) the chat body (message list container) is 75% wide and centred
+// (`w-full lg:w-3/4 mx-auto`, keeping `px-2`/`sm:px-4`) and both centred input wrappers (the
+// second one also holds the disclaimer) are 50% wide and centred (`mx-auto w-full lg:w-1/2`).
+// Below `lg` both stay `w-full`. No `max-w-*` class on any of these containers.
 
 vi.mock("@/components/LanguageProvider", () => ({
 	useLanguage: () => ({ language: "en", t: makeT("en"), setLanguage: () => {} })
@@ -55,7 +56,12 @@ describe("chat header is full width (dev review §2)", () => {
 	});
 });
 
-describe("message list spans the full width (dev review §3)", () => {
+/** True when the space-separated class list contains `cls` as a whole token. */
+function hasClass(classes: string, cls: string): boolean {
+	return classes.split(/\s+/).includes(cls);
+}
+
+describe("message list is 75% wide and centred at lg (dev review §3)", () => {
 	it("has no max-w constraint on any container", () => {
 		const offending = classNameLiterals(messageListSource).filter((c) => MAX_W.test(c));
 
@@ -70,19 +76,34 @@ describe("message list spans the full width (dev review §3)", () => {
 
 		expect(padded.length).toBeGreaterThan(0);
 	});
+
+	it("the padded list container is w-full, lg:w-3/4 and mx-auto", () => {
+		const padded = classNameLiterals(messageListSource).filter(
+			(c) => hasClass(c, "px-2") && hasClass(c, "sm:px-4")
+		);
+
+		expect(padded.length).toBeGreaterThan(0);
+		for (const c of padded) {
+			expect(hasClass(c, "w-full"), c).toBe(true);
+			expect(hasClass(c, "lg:w-3/4"), c).toBe(true);
+			expect(hasClass(c, "mx-auto"), c).toBe(true);
+		}
+	});
 });
 
-describe("chat input is centred at max-w-2xl like the old input (dev review §3)", () => {
+describe("chat input is 50% wide and centred at lg (dev review §3)", () => {
 	it("has no max-w-3xl left in chat-input.tsx", () => {
 		expect(chatInputSource).not.toContain("max-w-3xl");
 	});
 
-	it("both centred input wrappers use max-w-2xl", () => {
-		const centred = classNameLiterals(chatInputSource).filter((c) => /(^|\s)mx-auto(\s|$)/.test(c));
+	it("both centred input wrappers are w-full and lg:w-1/2, with no max-w", () => {
+		const centred = classNameLiterals(chatInputSource).filter((c) => hasClass(c, "mx-auto"));
 
 		expect(centred.length).toBeGreaterThanOrEqual(2);
 		for (const c of centred) {
-			expect(c).toMatch(/(^|\s)max-w-2xl(\s|$)/);
+			expect(hasClass(c, "w-full"), c).toBe(true);
+			expect(hasClass(c, "lg:w-1/2"), c).toBe(true);
+			expect(MAX_W.test(c), c).toBe(false);
 		}
 	});
 });
