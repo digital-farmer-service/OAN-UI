@@ -62,8 +62,7 @@
     { "code": "gu", "name": "ગુજરાતી", "nativeName": "ગુજરાતી", "icon": "અ" },
     { "code": "kn", "name": "ಕನ್ನಡ", "nativeName": "ಕನ್ನಡ", "icon": "ಅ" },
     { "code": "ml", "name": "മലയാളം", "nativeName": "മലയാളം", "icon": "അ" },
-    { "code": "as", "name": "অসমীয়া", "nativeName": "অসমীয়া", "icon": "অ" },
-    { "code": "mai", "name": "मैथिली", "nativeName": "मैथिली", "icon": "अ" }
+    { "code": "as", "name": "অসমীয়া", "nativeName": "অসমীয়া", "icon": "অ" }
   ],
   "defaultLanguage": "en",
   "languageTexts": {
