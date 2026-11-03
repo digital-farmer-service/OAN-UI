@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect } from "react";
 import config from "../../config.json";
-import { useThemeStore } from "@/hooks/store/theme";
+import { resolveTheme, useThemeStore } from "@/hooks/store/theme";
 import { THEMES } from "@/components/screens-component/chat-screen/config";
 
 type Config = typeof config;
@@ -22,7 +22,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const colors = { ...config.theme.colors };
 
       // Apply Dark Mode Overrides if active
-      if (theme === THEMES.dark && 'dark' in colors && typeof colors.dark === 'object') {
+      if (resolveTheme(theme) === THEMES.dark && 'dark' in colors && typeof colors.dark === 'object') {
         Object.assign(colors, colors.dark);
       }
 

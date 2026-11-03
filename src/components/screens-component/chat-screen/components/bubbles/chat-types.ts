@@ -30,6 +30,8 @@ export type CardMessage = MessageBase & {
 	failedUserText?: string;
 	failedLanguage?: string;
 	responseLanguage?: LanguageCode;
+	/** How many times the failed question was already retried (see MAX_RETRIES). */
+	retryCount?: number;
 };
 
 export type QuickRepliesMessage = MessageBase & {

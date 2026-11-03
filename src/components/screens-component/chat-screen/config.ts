@@ -69,7 +69,8 @@ export const FAQ_DATA: FAQItem[] = [
 
 export const THEMES = {
 	light: "light",
-	dark: "dark"
+	dark: "dark",
+	system: "system"
 } as const;
 
 export type Theme = keyof typeof THEMES;

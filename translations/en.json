@@ -6,6 +6,8 @@
   "stopRecording": "Stop recording",
   "send": "Send message",
   "Listen": "Listen",
+  "retry": "Retry",
+  "retrying": "Retrying...",
   "selectLanguage": "Select language",
   "disclaimerText": "AI-generated content. Please verify locally if required.",
   "questions": [
