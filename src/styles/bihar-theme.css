@@ -10,7 +10,7 @@
  * ConfigProvider; this file sets everything the config does not reach.
  */
 
-/* Tailwind palette remap: hard-coded indigo-* / amber-* utilities follow the farm green / gold. */
+/* Tailwind palette remap: hard-coded indigo-* / amber-* utilities follow the farm green (the honey ramp below stays for .like-active). */
 @theme {
 	--color-indigo-50: #f0f7f2;
 	--color-indigo-100: #dcede2;
@@ -24,17 +24,18 @@
 	--color-indigo-900: #1e3d2c;
 	--color-indigo-950: #102219;
 
-	--color-amber-50: #fefaec;
-	--color-amber-100: #fcf0c9;
-	--color-amber-200: #f9e08e;
-	--color-amber-300: #f5cf5e;
-	--color-amber-400: #f1c24c;
-	--color-amber-500: #e5a92a;
-	--color-amber-600: #c9861c;
-	--color-amber-700: #a2641a;
-	--color-amber-800: #854f1c;
-	--color-amber-900: #6e411b;
-	--color-amber-950: #3f220b;
+	/* amber-* (pest/image dialog, camera icon, notices) follows the brand green, not yellow (owner review). */
+	--color-amber-50: #f0f7f2;
+	--color-amber-100: #dcede2;
+	--color-amber-200: #bbdbc7;
+	--color-amber-300: #8fc2a3;
+	--color-amber-400: #5fa37c;
+	--color-amber-500: #3f8760;
+	--color-amber-600: #2f6e4c;
+	--color-amber-700: #2d5d41;
+	--color-amber-800: #244a35;
+	--color-amber-900: #1e3d2c;
+	--color-amber-950: #102219;
 }
 
 :root:root {
