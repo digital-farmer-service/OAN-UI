@@ -16,7 +16,7 @@ const virtualRouteFileChangeReloadPlugin: PluginOption = {
 		});
 	}
 };
-// Opt-in dev proxy: set VITE_DEV_PROXY_TARGET (e.g. in .env.local) to forward /api to a backend, so
+// Opt-in dev proxy: set VITE_DEV_PROXY_TARGET (e.g. in .env.local) to forward /api and /observability-service, so
 // `window.__ENV__.VITE_API_URL: ""` (same origin) works locally without CORS. Off when unset.
 const devProxyTarget = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "VITE_")
 	.VITE_DEV_PROXY_TARGET;
@@ -48,7 +48,14 @@ export default defineConfig({
 	server: {
 		port: 3000,
 		...(devProxyTarget
-			? { proxy: { "/api": { target: devProxyTarget, changeOrigin: true, secure: true } } }
+			? {
+					proxy: Object.fromEntries(
+						["/api", "/observability-service"].map((p) => [
+							p,
+							{ target: devProxyTarget, changeOrigin: true, secure: true }
+						])
+					)
+				}
 			: {})
 	}
 });
