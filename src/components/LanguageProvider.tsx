@@ -46,7 +46,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     migrateLegacyLanguage();
     const saved = localStorage.getItem('app_language');
-    return (saved as LanguageCode) || DEFAULT_LANGUAGE;
+    return saved && Object.prototype.hasOwnProperty.call(LANGUAGES, saved) ? (saved as LanguageCode) : DEFAULT_LANGUAGE;
   });
 
   const setLanguage = (lang: LanguageCode) => {

@@ -59,14 +59,7 @@
   },
   "languages": [
     { "code": "hi", "name": "हिंदी", "nativeName": "हिंदी", "icon": "अ" },
-    { "code": "en", "name": "English", "nativeName": "English", "icon": "अ" },
-    { "code": "bn", "name": "বাংলা", "nativeName": "বাংলা", "icon": "অ" },
-    { "code": "te", "name": "తెలుగు", "nativeName": "తెలుగు", "icon": "అ" },
-    { "code": "ta", "name": "தமிழ்", "nativeName": "தமிழ்", "icon": "அ" },
-    { "code": "gu", "name": "ગુજરાતી", "nativeName": "ગુજરાતી", "icon": "અ" },
-    { "code": "kn", "name": "ಕನ್ನಡ", "nativeName": "ಕನ್ನಡ", "icon": "ಅ" },
-    { "code": "ml", "name": "മലയാളം", "nativeName": "മലയാളം", "icon": "അ" },
-    { "code": "as", "name": "অসমীয়া", "nativeName": "অসমীয়া", "icon": "অ" }
+    { "code": "en", "name": "English", "nativeName": "English", "icon": "अ" }
   ],
   "defaultLanguage": "en",
   "languageTexts": {
