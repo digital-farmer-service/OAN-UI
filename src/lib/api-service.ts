@@ -597,6 +597,7 @@ class ApiService {
   }
 
   async submitTelemetryFeedback(payload: TelemetryFeedbackPayload): Promise<void> {
+    if (!environment.feedbackEnabled) return; // relay off in this fork unless FEEDBACK_ENABLED=true
     await this.refreshAuthTokenIfExpiredOrMissing();
     if (!this.validateAuth()) return;
 
@@ -606,6 +607,7 @@ class ApiService {
   }
 
   async submitTelemetryError(payload: TelemetryErrorPayload): Promise<void> {
+    if (!environment.telemetryEnabled) return; // relay off in this fork unless TELEMETRY_ENABLED=true
     await this.refreshAuthTokenIfExpiredOrMissing();
     if (!this.validateAuth()) return;
 
@@ -615,6 +617,7 @@ class ApiService {
   }
 
   trackUiTelemetryEvent(event: Omit<UiTelemetryEvent, "time"> & { time?: string }): void {
+    if (!environment.telemetryEnabled) return;
     void this.submitUiTelemetryEvent(event);
   }
 
@@ -640,6 +643,16 @@ class ApiService {
       });
     } catch {
       // UI telemetry must never block or surface errors to users.
+    }
+  }
+
+  /** Token seam for the Sunbird emitter: stored JWT, or /api/token when forced or missing; null on failure. */
+  async getTelemetryAuthToken(opts: { forceRefresh?: boolean } = {}): Promise<string | null> {
+    try {
+      const stored = opts.forceRefresh ? null : this.getAuthToken();
+      return stored ?? (await this.performTokenRefresh());
+    } catch {
+      return null;
     }
   }
 

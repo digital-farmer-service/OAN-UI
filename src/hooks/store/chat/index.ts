@@ -15,6 +15,7 @@ import { shuffle, randomPick } from "@/lib/qa-utils";
 import type { ToastType } from "@/components/screens-component/chat-screen/components/toast";
 import { environment } from "@/lib/config/environment";
 import { neutralizeHtmlMarkup } from "@/lib/security/html";
+import { sunbirdAnswer, sunbirdChunk, sunbirdError, sunbirdFeedback, sunbirdQuestion } from "@/lib/sunbird-telemetry/chat-hooks";
 
 export type ApiNotification = {
 	notification_id: string;
@@ -573,6 +574,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			set({ sessionId: currentSession });
 			apiService.setSessionId(currentSession);
 		}
+		const sunbirdQid = sunbirdQuestion(currentSession, safeText);
 
 		try {
 			// In a real app we'd detect language, here we use what's passed
@@ -584,6 +586,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				language, // source
 				language, // target
 				(chunk) => {
+					sunbirdChunk(sunbirdQid);
 					streamingText += chunk;
 					set((state) => {
 						const lastMsg = state.messages[state.messages.length - 1];
@@ -611,6 +614,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				isAssistantTyping: false,
 				isInputLocked: false
 			}));
+			sunbirdAnswer({ qid: sunbirdQid, sessionId: currentSession, questionText: safeText, answerText: streamingText, messageId: get().messages.findLast((m) => m.role === "assistant")?.id, backendQid: response.qid });
 
 			if (!environment.suggestionsDisabled) {
 				const suggestions = await apiService.getSuggestions(currentSession, language);
@@ -630,6 +634,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 				error?.status === 429 ||
 				error?.response?.status === 429 ||
 				(error instanceof Error && error.message.includes("Rate limit"));
+			sunbirdError(sunbirdQid, currentSession, error, isRateLimitError);
 
 			if (isRateLimitError) {
 				const limitMessage = t
@@ -1197,6 +1202,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		const feedbackMsg = isPositive
 			? "Liked the response"
 			: feedback || reason || "Negative feedback";
+		sunbirdFeedback({ messageId, fallbackQid: qid, sessionId, feedbackText: feedbackMsg, feedbackType, questionText, answerText: responseText });
 
 		try {
 			await apiService.submitTelemetryFeedback({
