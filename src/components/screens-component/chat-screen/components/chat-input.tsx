@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Mic, X, Camera, ImageIcon } from "lucide-react";
 import Lottie from "lottie-react";
 import loadingAnim from "@/assets/Loading.json";
@@ -46,7 +46,7 @@ export type ChatInputProps = {
 	onVoiceStart?: () => void;
 	onVoiceStop?: () => void;
 	micHint?: string;
-	footerNote?: string;
+	footerNote?: ReactNode;
 	isListening?: boolean;
 	isTranscribing?: boolean;
 	suggestions?: Suggestion[];

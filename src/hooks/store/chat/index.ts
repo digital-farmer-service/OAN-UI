@@ -1328,7 +1328,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			});
 		} catch (error) {
 			console.error("Copy to clipboard failed:", error);
-			set({ toast: { message: "Could not copy the message. Please try again.", type: "error" } });
+			set({
+				toast: {
+					message: t
+						? String(t("toast.copyFailed"))
+						: "Could not copy the message. Please try again.",
+					type: "error"
+				}
+			});
 		}
 	}
 }));

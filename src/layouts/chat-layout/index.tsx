@@ -11,6 +11,7 @@ import { Toast } from "@/components/screens-component/chat-screen/components/toa
 import { SettingsDrawer } from "@/components/screens-component/chat-screen/components/settings-drawer";
 // import { LocationPermissionDialog } from "@/components/screens-component/chat-screen/components/location-permission-dialog";
 import apiService from "@/lib/api-service";
+import { BiharFooter } from "@/bihar/footer";
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -152,7 +153,7 @@ function ChatLayout() {
 					suggestions={suggestions}
 					onSuggestionClick={(text: string) => sendText(text, language, t)}
 					micHint={messages.length > 0 ? undefined : (t("chatMicHint") as string)}
-					footerNote={t("disclaimerText") as string}
+					footerNote={<BiharFooter />}
 				/>
 			</div>
 

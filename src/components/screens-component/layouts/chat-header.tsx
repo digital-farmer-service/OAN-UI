@@ -1,11 +1,10 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/LanguageProvider";
-import { LANGUAGES } from "@/components/screens-component/chat-screen/config";
+import { LANGUAGES, THEMES } from "@/components/screens-component/chat-screen/config";
 import { LanguageSelectionDropdown } from "@/components/screens-component/chat-screen/components/language-selection-dialog";
-import { NotificationsPopover } from "@/components/screens-component/chat-screen/components/notifications-popover";
-const logo = "/maha-logo.svg";
-const settingsIcon = "/assets/settings.svg";
+import { resolveTheme, useThemeStore } from "@/hooks/store/theme";
+import logo from "@/assets/biharKrishiLogo.png";
 const langIcon = "/assets/langIcon.svg";
 
 export type ChatHeaderProps = {
@@ -16,37 +15,38 @@ export type ChatHeaderProps = {
 	onBack?: () => void;
 	onOpenProfile?: () => void;
 	onClearChat?: () => void;
+	/** Kept for API compatibility; the Bihar header has no settings gear. */
 	onOpenSettings?: () => void;
 };
 
+// Bihar Krishi header (old Layout.tsx:70-121): logo + title text, language selector and theme
+// toggle. No notifications bell, no settings gear.
 export function ChatHeader(props: ChatHeaderProps) {
-	const { title, onOpenSettings } = props;
+	const { title } = props;
 
 	const { language } = useLanguage();
 	const currentLanguage = (LANGUAGES as any)[language] || LANGUAGES.en;
+	const theme = useThemeStore((s) => s.theme);
+	const toggleTheme = useThemeStore((s) => s.toggleTheme);
+	const isDark = resolveTheme(theme) === THEMES.dark;
 
 	return (
-		<header className="sticky top-0 z-50 w-full bg-white dark:bg-[var(--headerBg-dark)] border-b border-[#E3E3E3] dark:border-[var(--border-dark)] transition-colors duration-300">
-			<div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4">
+		<header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
+			<div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-3 sm:px-4">
 				{/* Left: Logo & Title */}
-				<div className="flex items-center gap-2 min-w-0">
-					<img 
-						src={logo} 
-						alt={title} 
-						className="h-11 sm:h-12 w-auto object-contain shrink-0" 
-					/>
+				<div className="flex min-w-0 items-center gap-2">
+					<img src={logo} alt="" className="h-6 w-auto shrink-0 object-contain" />
+					<span className="truncate text-lg font-bold text-primary">{title}</span>
 				</div>
 
-				{/* Right: Notification + Language + Settings */}
-				<div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-					<NotificationsPopover />
-
+				{/* Right: Language + Theme */}
+				<div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
 					{/* Language Dropdown */}
 					<LanguageSelectionDropdown>
 						{/* Desktop Language Button */}
 						<Button
 							variant="outline"
-							className="hidden h-9 w-auto gap-2 rounded-full border hover:border-[var(--primary)] px-3 font-normal text-foreground dark:text-[var(--headerText-dark)] sm:flex cursor-pointer hover:bg-[var(--secondary)]/90 dark:hover:text-black"
+							className="hidden h-9 w-auto gap-2 rounded-full border hover:border-[var(--primary)] px-3 font-normal text-foreground sm:flex cursor-pointer hover:bg-accent/50"
 						>
 							<img src={langIcon} alt="Language" className="h-5 w-5" />
 							<span className="font-medium text-xs">{currentLanguage.name}</span>
@@ -56,22 +56,24 @@ export function ChatHeader(props: ChatHeaderProps) {
 
 					{/* Mobile Language Button */}
 					<LanguageSelectionDropdown>
-						<Button 
-							variant="ghost" 
-							size="icon" 
+						<Button
+							variant="ghost"
+							size="icon"
 							className="h-9 w-9 sm:hidden cursor-pointer"
 						>
 							<img src={langIcon} alt="Language" className="h-6 w-6" />
 						</Button>
 					</LanguageSelectionDropdown>
 
-					<Button 
-						variant="ghost" 
-						size="icon" 
-						className="h-10 w-10 text-muted-foreground cursor-pointer hover:bg-[var(--secondary)]"
-						onClick={onOpenSettings}
+					<Button
+						data-testid="theme-toggle"
+						variant="ghost"
+						size="icon"
+						className="h-9 w-9 rounded-full text-foreground cursor-pointer hover:bg-accent/50"
+						aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+						onClick={toggleTheme}
 					>
-						<img src={settingsIcon} alt="Settings" className="h-7 w-7 text-[var(--primary)]" />
+						{isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
 					</Button>
 				</div>
 			</div>

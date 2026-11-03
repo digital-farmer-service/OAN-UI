@@ -1,47 +1,45 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Copy, ThumbsDown, ThumbsUp, Volume2, Check, Pause, Play, RefreshCw } from "lucide-react";
+import { Copy, Loader2, ThumbsDown, ThumbsUp, Volume2, RefreshCw } from "lucide-react";
 import { type CardMessage } from "./chat-types";
 import { FeedbackModal } from "../feedback-modal";
-import { useChatStore } from "@/hooks/store/chat";
+import { canRetryMessage, useChatStore } from "@/hooks/store/chat";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { getTtsLabelKey } from "@/lib/audio-utils";
 import { cn } from "@/lib/utils";
 import { BetaLanguageNote } from "./beta-language-note";
 import { SafeMarkdown } from "./safe-markdown";
 
 export function CardBubble({ message }: { readonly message: CardMessage }) {
-	const { language } = useLanguage();
-	const playTTS = useChatStore((s) => s.playTTS);
-	const pauseTTS = useChatStore((s) => s.pauseTTS);
-	const resumeTTS = useChatStore((s) => s.resumeTTS);
+	const { language, t } = useLanguage();
+	const isMobile = useIsMobile();
+	const toggleTTS = useChatStore((s) => s.toggleTTS);
 	const currentlyPlayingId = useChatStore((s) => s.currentlyPlayingId);
 	const ttsStatus = useChatStore((s) => s.ttsStatus);
+	const feedback = useChatStore((s) => s.messageFeedback[message.id]);
+	const toggleLike = useChatStore((s) => s.toggleLike);
+	const copyMessage = useChatStore((s) => s.copyMessage);
 	const submitFeedback = useChatStore((s) => s.submitMessageFeedback);
 	const retryLastMessage = useChatStore((s) => s.retryLastMessage);
-	const setToast = useChatStore((s) => s.setToast);
 
 	const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [showCopySuccess, setShowCopySuccess] = useState(false);
-	const [showThumbsUpSuccess, setShowThumbsUpSuccess] = useState(false);
-	const [showThumbsDownSuccess, setShowThumbsDownSuccess] = useState(false);
 	const [isRetrying, setIsRetrying] = useState(false);
 
-	const isThisPlaying = currentlyPlayingId === message.id && ttsStatus === "playing";
-	const isThisPaused = currentlyPlayingId === message.id && ttsStatus === "paused";
+	const isThisMessage = currentlyPlayingId === message.id;
+	const isThisLoading = isThisMessage && ttsStatus === "loading";
+	const isThisPlaying = isThisMessage && ttsStatus === "playing";
+	const isLiked = feedback === "like";
+	const isDisliked = feedback === "dislike";
 	const isRetryableError = message.isError && message.failedUserText;
+	const canRetry = canRetryMessage(message);
 	const responseLanguage = message.responseLanguage ?? language;
 
 	const handleListen = async () => {
 		try {
-			if (isThisPlaying) {
-				pauseTTS();
-			} else if (isThisPaused) {
-				await resumeTTS();
-			} else {
-				await playTTS(message.body, language, message.id);
-			}
+			await toggleTTS(message.body, language, message.id);
 		} catch (error) {
 			console.error("TTS action failed:", error);
 		}
@@ -50,36 +48,19 @@ export function CardBubble({ message }: { readonly message: CardMessage }) {
 	const handleRetry = () => {
 		if (isRetrying) return;
 		setIsRetrying(true);
-		retryLastMessage(language);
+		retryLastMessage(language, t);
 	};
 
-	const handleThumbsUp = async () => {
-		if (isSubmitting) return;
-		setIsSubmitting(true);
-
-		try {
-			await submitFeedback(message.id, true);
-			setShowThumbsUpSuccess(true);
-		} catch (error) {
-			console.error("Thumbs up failed:", error);
-		} finally {
-			setIsSubmitting(false);
-		}
+	const handleLike = () => {
+		void toggleLike(message.id, t);
 	};
 
 	const handleThumbsDown = () => {
 		setFeedbackModalOpen(true);
 	};
 
-	const handleCopy = async () => {
-		try {
-			await navigator.clipboard.writeText(message.body);
-			setShowCopySuccess(true);
-			setTimeout(() => setShowCopySuccess(false), 1000);
-		} catch (error) {
-			console.error(error);
-			setToast({ message: "Failed to copy to clipboard. Please try again", type: "error" });
-		}
+	const handleCopy = () => {
+		void copyMessage(message.id, t);
 	};
 
 	const handleFeedbackSubmit = async (
@@ -91,7 +72,6 @@ export function CardBubble({ message }: { readonly message: CardMessage }) {
 
 		try {
 			await submitFeedback(message.id, false, reason, feedbackMessage);
-			setShowThumbsDownSuccess(true);
 		} catch (error) {
 			console.error("Feedback submission failed:", error);
 		} finally {
@@ -99,15 +79,20 @@ export function CardBubble({ message }: { readonly message: CardMessage }) {
 		}
 	};
 
+	const iconButton =
+		"h-9 w-9 rounded-md text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary cursor-pointer";
+
 	// AI Messages are always cards in this design
 	return (
 		<>
-			<div className="w-full max-w-[95%] sm:max-w-[90%] mb-8">
+			<div className="w-full max-w-full sm:max-w-[90%] mb-8">
 				<Card className={cn(
-					"relative rounded-2xl border-none p-4 shadow-sm overflow-hidden",
+					"relative rounded-2xl rounded-tl-none border-none p-4 shadow-none overflow-hidden",
 					isRetryableError
 						? "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30"
-						: "bg-white dark:bg-[var(--aiBubble-dark)] dark:border-[var(--border-dark)]"
+						: isMobile
+							? "bg-transparent px-1"
+							: "bg-muted"
 				)}>
 					{/* Content */}
 					<div>
@@ -115,23 +100,23 @@ export function CardBubble({ message }: { readonly message: CardMessage }) {
 							<div className="mb-2 text-base font-bold">{message.title}</div>
 						) : null}
 
-						<div className={cn("prose prose-sm dark:prose-invert max-w-none text-base leading-relaxed text-foreground dark:text-[var(--aiBubbleText-dark)] break-words overflow-wrap-anywhere", message.isError && "text-red-600 dark:text-red-400 font-medium")}>
+						<div className={cn("prose prose-sm dark:prose-invert max-w-none text-base leading-relaxed text-foreground break-words overflow-wrap-anywhere", message.isError && "text-red-600 dark:text-red-400 font-medium")}>
 							<SafeMarkdown>{message.body}</SafeMarkdown>
 						</div>
 						<BetaLanguageNote language={responseLanguage} />
 
-						{/* Retry Button for error messages */}
-						{isRetryableError && (
+						{/* Retry Button for error messages, until the retry limit is reached */}
+						{canRetry && (
 							<div className="mt-3 flex items-center gap-2">
 								<Button
-									variant="outline"
+									data-action="retry"
 									size="sm"
-									className="gap-2 rounded-xl border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/40 cursor-pointer"
+									className="gap-2 rounded-md cursor-pointer"
 									onClick={handleRetry}
 									disabled={isRetrying}
 								>
 									<RefreshCw className={cn("h-3.5 w-3.5", isRetrying && "animate-spin")} />
-									{isRetrying ? "Retrying..." : "Retry"}
+									{(isRetrying ? t("retrying") : t("retry")) as string}
 								</Button>
 							</div>
 						)}
@@ -152,91 +137,70 @@ export function CardBubble({ message }: { readonly message: CardMessage }) {
 						) : null}
 					</div>
 
-					{/* Footer Row — hidden for retryable errors */}
+					{/* Action row: hidden for retryable errors */}
 					{message.showListenRow && !isRetryableError && (
-						<div className="flex flex-col gap-3">
-							<div className="mx-[-1rem] h-px bg-gray-200 dark:bg-indigo-800/20" />
-							<div className="flex items-center justify-start -ml-3">
-							<div className="flex items-center gap-0">
-								<Button
-									variant="ghost"
-									className="group h-10 gap-2 rounded-none pl-6 pr-4 text-sm font-bold text-[var(--primary)] transition-all hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30 cursor-pointer"
-									onClick={handleListen}
-								>
-									{isThisPlaying ? (
-										<Pause className="h-4 w-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
-									) : isThisPaused ? (
-										<Play className="h-4 w-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
-									) : (
-										<Volume2 className="h-4 w-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
-									)}
-									<span>{isThisPlaying ? "Pause" : isThisPaused ? "Resume" : "Listen"}</span>
-								</Button>
+						<div className="mt-3 flex flex-wrap items-center gap-1">
+							<Button
+								data-action="listen"
+								variant="outline"
+								className={cn(
+									"h-9 gap-2 rounded-md border-primary/20 bg-primary/10 px-3 text-sm font-medium text-primary hover:bg-primary/20 hover:text-primary cursor-pointer",
+									isThisPlaying && "bg-primary/20"
+								)}
+								onClick={handleListen}
+								disabled={isThisLoading}
+								aria-disabled={isThisLoading || undefined}
+								aria-busy={isThisLoading || undefined}
+							>
+								{isThisLoading ? (
+									<Loader2 data-testid="tts-spinner" className="h-4 w-4 animate-spin" />
+								) : (
+									<Volume2 className={cn("h-4 w-4", isThisPlaying && "animate-pulse")} />
+								)}
+								<span>{t(getTtsLabelKey(ttsStatus)) as string}</span>
+							</Button>
 
-								<div className="h-5 w-px self-center bg-gray-200 dark:bg-indigo-800/30" />
+							<Button
+								data-action="copy"
+								variant="ghost"
+								size="icon"
+								className={iconButton}
+								aria-label="Copy"
+								title="Copy"
+								onClick={handleCopy}
+							>
+								<Copy className="h-4 w-4" />
+							</Button>
 
+							{!isDisliked && (
 								<Button
+									data-action="like"
 									variant="ghost"
 									size="icon"
-									className="flex-1 h-10 w-12 rounded-none text-foreground/60 transition-all hover:bg-indigo-50 hover:text-[var(--primary)] dark:text-gray-400 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-300 cursor-pointer"
-									title="Copy"
-									onClick={handleCopy}
+									className={cn(iconButton, isLiked && "like-active")}
+									aria-label="Helpful"
+									aria-pressed={isLiked}
+									title="Helpful"
+									onClick={handleLike}
 								>
-									{showCopySuccess ? (
-										<Check className="h-4 w-4 text-[var(--primary)]" />
-									) : (
-										<Copy className="h-4 w-4 text-[var(--primary)]" />
-									)}
+									<ThumbsUp className="h-4 w-4" fill={isLiked ? "currentColor" : "none"} />
 								</Button>
+							)}
 
-								<div className="h-5 w-px self-center bg-gray-200 dark:bg-indigo-800/30" />
-
-								{!showThumbsDownSuccess && (
-									<>
-										<div className="flex-1 flex items-center justify-center">
-											<Button
-												variant="ghost"
-												size="icon"
-												className={cn(
-													"h-10 w-12 rounded-none text-foreground/60 transition-all hover:bg-indigo-50 hover:text-[var(--primary)] dark:text-gray-400 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-300 cursor-pointer disabled:opacity-100",
-													showThumbsUpSuccess && "pointer-events-none"
-												)}
-												title="Helpful"
-												onClick={handleThumbsUp}
-												disabled={isSubmitting || showThumbsUpSuccess}
-											>
-												<ThumbsUp 
-													className={cn("h-4 w-4 text-[var(--primary)]")} 
-													fill={showThumbsUpSuccess ? "var(--primary)" : "none"}
-												/>
-											</Button>
-										</div>
-										{!showThumbsUpSuccess && <div className="h-5 w-px self-center bg-gray-200 dark:bg-indigo-800/30" />}
-									</>
-								)}
-
-								{!showThumbsUpSuccess && (
-									<div className="flex-1 flex items-center justify-center">
-										<Button
-											variant="ghost"
-											size="icon"
-											className={cn(
-												"h-10 w-12 rounded-none text-foreground/60 transition-all hover:bg-red-50 hover:text-red-500 dark:text-gray-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 cursor-pointer disabled:opacity-100",
-												showThumbsDownSuccess && "pointer-events-none"
-											)}
-											title="Not Helpful"
-											onClick={handleThumbsDown}
-											disabled={isSubmitting || showThumbsDownSuccess}
-										>
-											<ThumbsDown 
-												className={cn("h-4 w-4 text-[var(--primary)]")} 
-												fill={showThumbsDownSuccess ? "var(--primary)" : "none"}
-											/>
-										</Button>
-									</div>
-								)}
-							</div>
-							</div>
+							{!isLiked && (
+								<Button
+									data-action="dislike"
+									variant="ghost"
+									size="icon"
+									className={cn(iconButton, "disabled:opacity-100", isDisliked && "pointer-events-none text-primary")}
+									aria-label="Not Helpful"
+									title="Not Helpful"
+									onClick={handleThumbsDown}
+									disabled={isSubmitting || isDisliked}
+								>
+									<ThumbsDown className="h-4 w-4" fill={isDisliked ? "currentColor" : "none"} />
+								</Button>
+							)}
 						</div>
 					)}
 				</Card>

@@ -10,6 +10,8 @@
   "retrying": "Retrying...",
   "selectLanguage": "Select language",
   "disclaimerText": "AI-generated content. Please verify locally if required.",
+  "poweredBy": "Powered by",
+  "helpYouToday": "How can I help you today?",
   "questions": [
     {
       "key": "schemes.info.pm_kisan",
@@ -232,7 +234,8 @@
     "rateLimitError": {
       "title": "Please Wait",
       "description": "Dear user, you have reached the allotted question limit for today. You may continue to explore the other features of the Bharat-VISTAAR app."
-    }
+    },
+    "copyFailed": "Could not copy the message. Please try again."
   },
   "maintenance": {
     "title": "Under Maintenance",

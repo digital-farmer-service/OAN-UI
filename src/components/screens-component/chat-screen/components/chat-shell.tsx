@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useChatStore } from "@/hooks/store/chat";
 import { MessageList } from "./message-list";
-import { WelcomePanel } from "./welcome-panel";
+import { BiharWelcome } from "@/bihar/welcome";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader } from "@/components";
@@ -12,9 +12,7 @@ export function ChatShell() {
 	const { language, t } = useLanguage();
 	const { user, isLoading: isAuthLoading } = useAuth();
 	const messages = useChatStore((s) => s.messages);
-	const quickActions = useChatStore((s) => s.quickActions);
 	const isAssistantTyping = useChatStore((s) => s.isAssistantTyping);
-	const sendQuickAction = useChatStore((s) => s.sendQuickAction);
 	const sendQuickReply = useChatStore((s) => s.sendQuickReply);
 	const initializeSession = useChatStore((s) => s.initializeSession);
 	const generateQuickActions = useChatStore((s) => s.generateQuickActions);
@@ -85,11 +83,7 @@ export function ChatShell() {
 						messages={messages}
 						isAssistantTyping={isAssistantTyping}
 						onQuickReply={(payload) => sendQuickReply(payload, language, t)}
-						welcome={
-							showWelcome ? (
-								<WelcomePanel actions={quickActions} onAction={(id) => sendQuickAction(id, language, t)} />
-							) : null
-						}
+						welcome={showWelcome ? <BiharWelcome /> : null}
 					/>
 				)}
 			</div>
