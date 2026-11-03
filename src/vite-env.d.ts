@@ -8,5 +8,7 @@ interface Window {
     FEEDBACK_ENABLED?: string;
     SUNBIRD_TELEMETRY_ENABLED?: string;
     SUNBIRD_TELEMETRY_HOST?: string;
+    GA_ENABLED?: string;
+    GA_MEASUREMENT_ID?: string;
   };
 }

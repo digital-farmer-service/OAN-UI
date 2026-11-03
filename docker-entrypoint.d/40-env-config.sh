@@ -18,7 +18,9 @@ window.__ENV__ = {
   TELEMETRY_ENABLED: $(json_str "${TELEMETRY_ENABLED:-}"),
   FEEDBACK_ENABLED: $(json_str "${FEEDBACK_ENABLED:-}"),
   SUNBIRD_TELEMETRY_ENABLED: $(json_str "${SUNBIRD_TELEMETRY_ENABLED:-}"),
-  SUNBIRD_TELEMETRY_HOST: $(json_str "${SUNBIRD_TELEMETRY_HOST:-}")
+  SUNBIRD_TELEMETRY_HOST: $(json_str "${SUNBIRD_TELEMETRY_HOST:-}"),
+  GA_ENABLED: $(json_str "${GA_ENABLED:-}"),
+  GA_MEASUREMENT_ID: $(json_str "${GA_MEASUREMENT_ID:-}")
 };
 EOF
 
@@ -31,4 +33,6 @@ echo "Generated env-config.js with VITE_API_URL=${VITE_API_URL:-'(not set)'}" \
   "TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-'(default false)'}" \
   "FEEDBACK_ENABLED=${FEEDBACK_ENABLED:-'(default false)'}" \
   "SUNBIRD_TELEMETRY_ENABLED=${SUNBIRD_TELEMETRY_ENABLED:-'(default true)'}" \
-  "SUNBIRD_TELEMETRY_HOST=${SUNBIRD_TELEMETRY_HOST:-'(default <VITE_API_URL>/observability-service)'}"
+  "SUNBIRD_TELEMETRY_HOST=${SUNBIRD_TELEMETRY_HOST:-'(default <VITE_API_URL>/observability-service)'}" \
+  "GA_ENABLED=${GA_ENABLED:-'(default true)'}" \
+  "GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID:-'(default G-SV0TLS2S41)'}"

@@ -11,5 +11,9 @@ window.__ENV__ = {
   // Bihar Krishi Sunbird V3 telemetry. "false" disables; default true.
   SUNBIRD_TELEMETRY_ENABLED: "",
   // Sunbird host override. Default <VITE_API_URL>/observability-service (off when both are empty).
-  SUNBIRD_TELEMETRY_HOST: ""
+  SUNBIRD_TELEMETRY_HOST: "",
+  // Google Analytics (GA4). "false" disables; default true. QA/dev should set "false".
+  GA_ENABLED: "",
+  // GA4 measurement id (G-XXXXXXX). Default G-SV0TLS2S41 (prod); an invalid value disables GA.
+  GA_MEASUREMENT_ID: ""
 };

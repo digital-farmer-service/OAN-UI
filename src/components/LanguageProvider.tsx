@@ -11,6 +11,7 @@ import ml from '../../translations/ml.json';
 import as_ from '../../translations/as.json';
 import mai from '../../translations/mai.json';
 import { DEFAULT_LANGUAGE } from './screens-component/chat-screen/config';
+import { trackLanguageChange } from '../lib/analytics/ga';
 
 type LanguageCode = 'hi' | 'en' | 'bn' | 'te' | 'mr' | 'ta' | 'gu' | 'kn' | 'ml' | 'as' | 'mai';
 
@@ -37,6 +38,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
     localStorage.setItem('app_language', lang);
+    // User choice only; the initial language read from storage is not reported.
+    trackLanguageChange(lang);
   };
 
   const t = useCallback((key: string, params?: Record<string, string>): string | string[] => {

@@ -11,9 +11,12 @@ import { queryClient } from "./hooks";
 import PageNotFound from "./pages/error/404";
 import DefaultError from "./pages/error/default-error";
 import { createRouteProgress } from "./config/route-progress";
+import { initAnalytics, trackPageView } from "./lib/analytics/ga";
 
 // Must run before anything reads or rewrites the URL (router, AuthContext).
 captureUrlIdentity();
+// Google Analytics: after the identity capture has stripped the launch params from the URL.
+initAnalytics();
 
 window.addEventListener("vite:preloadError", async (event) => {
 	event.preventDefault();
@@ -70,6 +73,14 @@ router.subscribe("onBeforeLoad", ({ pathChanged }) => {
 
 router.subscribe("onResolved", () => {
 	routeProgress.done();
+});
+
+// One GA page view per resolved path change (the first load counts as one); pathname only, so
+// query strings and hashes never reach Google.
+router.subscribe("onResolved", ({ toLocation, pathChanged }) => {
+	if (pathChanged) {
+		trackPageView(toLocation.pathname);
+	}
 });
 import { LanguageProvider } from "./components/LanguageProvider";
 import { AuthProvider } from "./contexts/AuthContext";

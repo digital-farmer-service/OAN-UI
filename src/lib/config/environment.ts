@@ -1,4 +1,10 @@
-import { normalizeUrl, parseBooleanFlag, readRuntimeEnv, resolveSunbirdHost } from './env-flags';
+import {
+  normalizeUrl,
+  parseBooleanFlag,
+  readRuntimeEnv,
+  resolveGaMeasurementId,
+  resolveSunbirdHost,
+} from './env-flags';
 
 // Runtime config, injected at container start via /env-config.js (window.__ENV__).
 const runtimeEnv = readRuntimeEnv();
@@ -17,4 +23,8 @@ export const environment = {
   // Re-ported Bihar Krishi Sunbird V3 emitter.
   sunbirdTelemetryEnabled: parseBooleanFlag(runtimeEnv.SUNBIRD_TELEMETRY_ENABLED, true),
   sunbirdTelemetryHost: resolveSunbirdHost(runtimeEnv.SUNBIRD_TELEMETRY_HOST, apiUrl),
+  // Google Analytics (GA4, kept from the old app). QA/dev set GA_ENABLED=false.
+  gaEnabled: parseBooleanFlag(runtimeEnv.GA_ENABLED, true),
+  // "" when GA_MEASUREMENT_ID is set but invalid: the GA module then stays disabled.
+  gaMeasurementId: resolveGaMeasurementId(runtimeEnv.GA_MEASUREMENT_ID),
 };

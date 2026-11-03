@@ -31,3 +31,13 @@ export function resolveSunbirdHost(override: unknown, apiUrl: string): string {
 	const base = normalizeUrl(apiUrl);
 	return base ? `${base}${SUNBIRD_HOST_SUFFIX}` : "";
 }
+
+export const DEFAULT_GA_MEASUREMENT_ID = "G-SV0TLS2S41";
+const GA_MEASUREMENT_ID_PATTERN = /^G-[A-Z0-9]{6,}$/;
+
+/** GA_MEASUREMENT_ID: unset/empty gives the prod id; a value that is not a GA4 id gives "" (GA off). */
+export function resolveGaMeasurementId(value: unknown): string {
+	const trimmed = typeof value === "string" ? value.trim() : "";
+	if (!trimmed) return DEFAULT_GA_MEASUREMENT_ID;
+	return GA_MEASUREMENT_ID_PATTERN.test(trimmed) ? trimmed : "";
+}
