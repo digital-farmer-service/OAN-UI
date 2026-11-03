@@ -32,7 +32,7 @@ export function ChatHeader(props: ChatHeaderProps) {
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
-			<div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-3 sm:px-4">
+			<div className="flex h-14 w-full items-center justify-between px-3 sm:px-4">
 				{/* Left: Logo & Title */}
 				<div className="flex min-w-0 items-center gap-2">
 					<img src={logo} alt="" className="h-6 w-auto shrink-0 object-contain" />

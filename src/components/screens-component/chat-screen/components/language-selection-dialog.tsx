@@ -46,7 +46,7 @@ export function LanguageSelectionDropdown({
 								className={cn(
 									"w-full flex items-center px-5 py-3.5 transition-colors text-left cursor-pointer",
 									isActive 
-										? "bg-[#FEF2B2] dark:bg-[#EFC300] text-gray-900 font-bold" 
+										? "bg-primary text-primary-foreground font-bold"
 										: "bg-white dark:bg-[#5D5D5D] text-gray-800 dark:text-white font-medium hover:bg-gray-50 dark:hover:brightness-110"
 								)}
 							>

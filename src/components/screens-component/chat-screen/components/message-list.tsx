@@ -33,7 +33,7 @@ export function MessageList(props: MessageListProps) {
 
 	return (
 		<ScrollArea className="h-full">
-			<div ref={containerRef} className="mx-auto flex max-w-3xl flex-col gap-3 px-2 pt-3 pb-14 sm:px-4">
+			<div ref={containerRef} className="flex w-full flex-col gap-3 px-2 pt-3 pb-14 sm:px-4">
 				{props.welcome}
 				{props.messages.map((m, i) => (
 					<div key={m.id} ref={i === props.messages.length - 1 ? lastMessageRef : null} className="w-full">
