@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption } from "vite";
+import { defineConfig, loadEnv, PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -16,6 +16,10 @@ const virtualRouteFileChangeReloadPlugin: PluginOption = {
 		});
 	}
 };
+// Opt-in dev proxy: set VITE_DEV_PROXY_TARGET (e.g. in .env.local) to forward /api to a backend, so
+// `window.__ENV__.VITE_API_URL: ""` (same origin) works locally without CORS. Off when unset.
+const devProxyTarget = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "VITE_")
+	.VITE_DEV_PROXY_TARGET;
 // https://vite.dev/config/
 export default defineConfig({
 	resolve: {
@@ -42,6 +46,9 @@ export default defineConfig({
 		virtualRouteFileChangeReloadPlugin
 	],
 	server: {
-		port: 3000
+		port: 3000,
+		...(devProxyTarget
+			? { proxy: { "/api": { target: devProxyTarget, changeOrigin: true, secure: true } } }
+			: {})
 	}
 });
