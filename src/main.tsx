@@ -1,3 +1,4 @@
+import { captureUrlIdentity } from "./lib/url-identity";
 import "./config/csp";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -10,6 +11,10 @@ import { queryClient } from "./hooks";
 import PageNotFound from "./pages/error/404";
 import DefaultError from "./pages/error/default-error";
 import { createRouteProgress } from "./config/route-progress";
+
+// Must run before anything reads or rewrites the URL (router, AuthContext).
+captureUrlIdentity();
+
 window.addEventListener("vite:preloadError", async (event) => {
 	event.preventDefault();
 	// Get current count from session storage or initialize to 0

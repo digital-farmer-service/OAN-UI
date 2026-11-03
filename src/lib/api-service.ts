@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { environment } from '@/lib/config/environment';
 import { getBrowserInfo, getFingerprintId } from '@/lib/utils';
+import { getIntegrityToken } from '@/lib/url-identity';
 
 export interface LocationData {
   latitude: number;
@@ -642,14 +643,21 @@ class ApiService {
     }
   }
 
-  async fetchAuthToken(metadata: string, fingerprintId?: string | null): Promise<string> {
+  async fetchAuthToken(
+    metadata: string,
+    fingerprintId?: string | null,
+    integrityToken?: string,
+    clientCode = 'bihar-krishi'
+  ): Promise<string> {
     try {
       // Don't use authentication headers for this call as we're getting the token
       const response = await axios.post<AuthResponse>(
         `${this.apiUrl}/api/token`,
         {
           metadata,
-          ...(fingerprintId && { fingerprint_id: fingerprintId }),
+          ...(fingerprintId ? { fingerprint_id: fingerprintId } : {}),
+          integrityToken: integrityToken ?? getIntegrityToken(),
+          clientCode,
         },
         {
           headers: {
