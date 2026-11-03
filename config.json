@@ -1,41 +1,45 @@
 {
   "theme": {
     "fonts": {
-      "family": "Poppins",
+      "family": "ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Noto Sans\", \"Noto Sans Devanagari\", sans-serif",
       "url": "/fonts/poppins.css"
     },
     "colors": {
-      "primary": "#4343ff",
-      "secondary": "#E0E7FF",
-      "accent": "#3b82f6",
-      "background": "linear-gradient(to right, #f1f3ff, #FFFFFF)",
-      "foreground": "#1E293B",
-      "userBubble": "#E0E7FF",
+      "primary": "#2D5D41",
+      "secondary": "#EBE9E0",
+      "accent": "#F1C24C",
+      "background": "#F8F7F2",
+      "foreground": "#193424",
+      "border": "#E6E4DA",
+      "userBubble": "#2D5D41",
       "dark": {
-        "background": "#020617",
-        "headerBg": "#0F172A",
-        "headerText": "#F8FAFC",
-        "userBubble": "#1E293B",
-        "userBubbleText": "#F8FAFC",
-        "aiBubble": "#1E293B80",
-        "aiBubbleText": "#F8FAFC",
-        "suggestionBg": "#1E293B",
-        "suggestionText": "#F8FAFC",
-        "inputBg": "#020617",
-        "inputText": "#F8FAFC",
-        "wave": "#F8FAFC",
-        "icon": "#F8FAFC",
-        "border": "#1E293B"
+        "primary": "#4B9B6C",
+        "secondary": "#2B3B37",
+        "foreground": "#F8F7F2",
+        "background": "#212C29",
+        "headerBg": "#212C29",
+        "headerText": "#F8F7F2",
+        "userBubble": "#4B9B6C",
+        "userBubbleText": "#F8F7F2",
+        "aiBubble": "#2B3B37",
+        "aiBubbleText": "#F8F7F2",
+        "suggestionBg": "#2B3B37",
+        "suggestionText": "#F8F7F2",
+        "inputBg": "#25322F",
+        "inputText": "#F8F7F2",
+        "wave": "#F8F7F2",
+        "icon": "#F8F7F2",
+        "border": "#364945"
       }
     },
     "fontSizes": {
-      "xs": "0.7rem",
-      "sm": "0.8rem",
-      "base": "0.9rem",
-      "lg": "1.05rem",
-      "xl": "1.15rem",
-      "2xl": "1.4rem",
-      "3xl": "1.75rem"
+      "xs": "0.75rem",
+      "sm": "0.875rem",
+      "base": "1rem",
+      "lg": "1.125rem",
+      "xl": "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem"
     }
   },
   "icons": {
