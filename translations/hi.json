@@ -11,7 +11,7 @@
   "selectLanguage": "भाषा चुनें",
   "disclaimerText": "AI-उत्पन्न जानकारी। कृपया स्वतंत्र रूप से सत्यापित करें।",
   "recordingListening": "[botName] सुन रही है, कृपया बोलना शुरू करें।",
-  "appTitle": "भारती",
+  "appTitle": "बिहार कृषि - AI",
   "questions": [
     {
       "key": "schemes.info.pm_kisan",
@@ -233,7 +233,7 @@
       "title": "कृपया प्रतीक्षा करें",
       "description": "हम अभी कई अनुरोधों को संसाधित कर रहे हैं। कृपया कुछ क्षणों में पुनः प्रयास करें।"
     },
-    "appTitle": "महाविस्तार"
+    "appTitle": "बिहार कृषि"
   },
   "settingsPage": {
     "title": "सेटिंग्स",

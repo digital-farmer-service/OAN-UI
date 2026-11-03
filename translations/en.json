@@ -1,5 +1,5 @@
 {
-  "welcome": "Hello! I am your farming assistant. How can I help you today?",
+  "welcome": "Namaste! I am your farming assistant. How can I help you today?",
   "inputPlaceholder": "Ask your question...",
   "chatMicHint": "Tap the microphone button to ask your question",
   "startRecording": "Start recording",
@@ -177,7 +177,7 @@
   "feedbackSubmit": "Submit Feedback",
   "feedbackCancel": "Cancel",
   "feedbackPlaceholder": "Or tell us more about the issue...",
-  "appTitle": "Bharati",
+  "appTitle": "Bihar Krishi - AI",
   "settings": "Settings",
   "copyMessage": "Copy message",
   "likeMessage": "Like message",

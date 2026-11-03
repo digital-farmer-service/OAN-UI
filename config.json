@@ -58,7 +58,6 @@
     { "code": "en", "name": "English", "nativeName": "English", "icon": "अ" },
     { "code": "bn", "name": "বাংলা", "nativeName": "বাংলা", "icon": "অ" },
     { "code": "te", "name": "తెలుగు", "nativeName": "తెలుగు", "icon": "అ" },
-    { "code": "mr", "name": "मराठी", "nativeName": "मराठी", "icon": "अ" },
     { "code": "ta", "name": "தமிழ்", "nativeName": "தமிழ்", "icon": "அ" },
     { "code": "gu", "name": "ગુજરાતી", "nativeName": "ગુજરાતી", "icon": "અ" },
     { "code": "kn", "name": "ಕನ್ನಡ", "nativeName": "ಕನ್ನಡ", "icon": "ಅ" },
@@ -66,18 +65,18 @@
     { "code": "as", "name": "অসমীয়া", "nativeName": "অসমীয়া", "icon": "অ" },
     { "code": "mai", "name": "मैथिली", "nativeName": "मैथिली", "icon": "अ" }
   ],
-  "defaultLanguage": "hi",
+  "defaultLanguage": "en",
   "languageTexts": {
     "en": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -92,13 +91,13 @@
     "hi": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -113,13 +112,13 @@
     "mr": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -134,13 +133,13 @@
     "gu": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -155,13 +154,13 @@
     "bn": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -176,13 +175,13 @@
     "te": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -197,13 +196,13 @@
     "ta": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -218,13 +217,13 @@
     "kn": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -239,13 +238,13 @@
     "ml": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -260,13 +259,13 @@
     "as": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
@@ -281,13 +280,13 @@
     "mai": {
       "chatDisclaimer": "AI-generated content. Please verify locally if required.",
       "chatMicHint": "Tap the microphone button to ask your question",
-      "chatWelcomeName": "Bharat-VISTAAR",
+      "chatWelcomeName": "Bihar Krishi",
       "languageDialog": {
         "title": "Change language",
         "applyButton": "Apply"
       },
       "header": {
-        "appName": "Bharat-VISTAAR",
+        "appName": "Bihar Krishi",
         "settings": "Settings",
         "profile": "Profile",
         "clearChat": "Clear chat",
