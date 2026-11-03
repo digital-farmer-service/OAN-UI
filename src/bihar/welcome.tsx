@@ -11,8 +11,9 @@ export function BiharWelcome() {
 	const isMobile = useIsMobile();
 
 	return (
-		<div className="flex min-h-[55svh] w-full items-center justify-center py-6">
-			<div className="flex w-full max-w-[200px] flex-col items-center">
+		<div className="flex min-h-[calc(100svh-17rem)] w-full items-center justify-center py-6">
+			{/* translate-y: optical centre between header and input, as in the old UI (list padding shifts it up) */}
+			<div className="flex w-full max-w-[200px] translate-y-10 flex-col items-center">
 				<div
 					className="mb-[3px] flex shrink-0 items-center justify-center"
 					style={{ width: isMobile ? 120 : 135, height: isMobile ? 160 : 180 }}
