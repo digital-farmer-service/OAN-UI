@@ -30,10 +30,10 @@ export default function AuthError() {
 
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-foreground">
-                Login required
+                Session could not be started
               </h1>
               <p className="text-sm font-normal leading-relaxed text-muted-foreground px-2">
-                Please log in to continue and access this page.
+                Please reload the page or reopen the app.
               </p>
             </div>
           </div>

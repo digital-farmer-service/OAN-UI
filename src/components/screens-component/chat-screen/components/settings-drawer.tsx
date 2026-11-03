@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Moon, Sun, X, Shield, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronUp, Moon, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useThemeStore } from "@/hooks/store/theme";
 import { THEMES, FAQ_DATA } from "@/components/screens-component/chat-screen/config";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useNavigate } from "@tanstack/react-router";
 
 interface SettingsDrawerProps {
 	open: boolean;
@@ -16,7 +15,6 @@ interface SettingsDrawerProps {
 export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
 	const { t } = useLanguage();
 	const { theme, setTheme } = useThemeStore();
-	const navigate = useNavigate();
 	const [faqOpen, setFaqOpen] = useState(true);
 	const [expandedFaqs, setExpandedFaqs] = useState<Record<string, boolean>>({ "1": true });
 
@@ -156,23 +154,6 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
 								</div>
 							</CollapsibleContent>
 						</Collapsible>
-
-						{/* Privacy Policy Link */}
-						<button
-							onClick={() => {
-								navigate({ to: "/privacy-policy" });
-								onOpenChange(false);
-							}}
-							className="flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-2.5 text-left transition-colors hover:bg-gray-100/80 dark:hover:bg-gray-800/50"
-						>
-							<div className="flex items-center gap-2.5">
-								<Shield className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-								<span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-									Privacy Policy
-								</span>
-							</div>
-							<ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-						</button>
 					</div>
 				</div>
 

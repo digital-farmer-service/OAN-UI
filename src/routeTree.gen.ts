@@ -10,38 +10,21 @@
 
 import { Route as rootRouteImport } from './pages/root'
 import { Route as errorDefaultErrorRoutesRouteImport } from './pages/error/default-error/routes'
-import { Route as middlewaresRestrictLoginSignupRouteImport } from './pages/middlewares/restrict-login-signup'
 import { Route as middlewaresPublicChatRouteImport } from './pages/middlewares/public-chat'
-import { Route as middlewaresAuthenticateRouteImport } from './pages/middlewares/authenticate'
 import { Route as error500RoutesRouteImport } from './pages/error/500/routes'
 import { Route as error404RoutesRouteImport } from './pages/error/404/routes'
 import { Route as error403RoutesRouteImport } from './pages/error/403/routes'
 import { Route as indexRouteImport } from './pages/index'
-import { Route as publicPrivacyPolicyRoutesRouteImport } from './pages/public/privacy-policy/routes'
-import { Route as authLoginRoutesRouteImport } from './pages/auth/login/routes'
-import { Route as authForgotPasswordRoutesRouteImport } from './pages/auth/forgot-password/routes'
 import { Route as app_chatLayoutRouteImport } from './pages/app/(_chat)/layout'
-import { Route as app_authenticatedLayoutRouteImport } from './pages/app/(_authenticated)/layout'
-import { Route as app_chatSettingsRoutesRouteImport } from './pages/app/(_chat)/settings/routes'
 import { Route as app_chatChatScreenRoutesRouteImport } from './pages/app/(_chat)/chat-screen/routes'
-import { Route as app_authenticatedProfileRoutesRouteImport } from './pages/app/(_authenticated)/profile/routes'
 
 const errorDefaultErrorRoutesRoute = errorDefaultErrorRoutesRouteImport.update({
   id: '/error',
   path: '/error',
   getParentRoute: () => rootRouteImport,
 } as any)
-const middlewaresRestrictLoginSignupRoute =
-  middlewaresRestrictLoginSignupRouteImport.update({
-    id: '/_restrict-login-signup',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const middlewaresPublicChatRoute = middlewaresPublicChatRouteImport.update({
   id: '/_public-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const middlewaresAuthenticateRoute = middlewaresAuthenticateRouteImport.update({
-  id: '/_authenticate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const error500RoutesRoute = error500RoutesRouteImport.update({
@@ -64,47 +47,15 @@ const indexRoute = indexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const publicPrivacyPolicyRoutesRoute =
-  publicPrivacyPolicyRoutesRouteImport.update({
-    id: '/privacy-policy',
-    path: '/privacy-policy',
-    getParentRoute: () => middlewaresRestrictLoginSignupRoute,
-  } as any)
-const authLoginRoutesRoute = authLoginRoutesRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => middlewaresRestrictLoginSignupRoute,
-} as any)
-const authForgotPasswordRoutesRoute =
-  authForgotPasswordRoutesRouteImport.update({
-    id: '/forgot-password',
-    path: '/forgot-password',
-    getParentRoute: () => middlewaresRestrictLoginSignupRoute,
-  } as any)
 const app_chatLayoutRoute = app_chatLayoutRouteImport.update({
   id: '/_chat-layout',
   getParentRoute: () => middlewaresPublicChatRoute,
-} as any)
-const app_authenticatedLayoutRoute = app_authenticatedLayoutRouteImport.update({
-  id: '/_app-layout',
-  getParentRoute: () => middlewaresAuthenticateRoute,
-} as any)
-const app_chatSettingsRoutesRoute = app_chatSettingsRoutesRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => app_chatLayoutRoute,
 } as any)
 const app_chatChatScreenRoutesRoute =
   app_chatChatScreenRoutesRouteImport.update({
     id: '/chat',
     path: '/chat',
     getParentRoute: () => app_chatLayoutRoute,
-  } as any)
-const app_authenticatedProfileRoutesRoute =
-  app_authenticatedProfileRoutesRouteImport.update({
-    id: '/profile',
-    path: '/profile',
-    getParentRoute: () => app_authenticatedLayoutRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -113,12 +64,7 @@ export interface FileRoutesByFullPath {
   '/404': typeof error404RoutesRoute
   '/500': typeof error500RoutesRoute
   '/error': typeof errorDefaultErrorRoutesRoute
-  '/forgot-password': typeof authForgotPasswordRoutesRoute
-  '/login': typeof authLoginRoutesRoute
-  '/privacy-policy': typeof publicPrivacyPolicyRoutesRoute
-  '/profile': typeof app_authenticatedProfileRoutesRoute
   '/chat': typeof app_chatChatScreenRoutesRoute
-  '/settings': typeof app_chatSettingsRoutesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof indexRoute
@@ -126,12 +72,7 @@ export interface FileRoutesByTo {
   '/404': typeof error404RoutesRoute
   '/500': typeof error500RoutesRoute
   '/error': typeof errorDefaultErrorRoutesRoute
-  '/forgot-password': typeof authForgotPasswordRoutesRoute
-  '/login': typeof authLoginRoutesRoute
-  '/privacy-policy': typeof publicPrivacyPolicyRoutesRoute
-  '/profile': typeof app_authenticatedProfileRoutesRoute
   '/chat': typeof app_chatChatScreenRoutesRoute
-  '/settings': typeof app_chatSettingsRoutesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -139,64 +80,26 @@ export interface FileRoutesById {
   '/403': typeof error403RoutesRoute
   '/404': typeof error404RoutesRoute
   '/500': typeof error500RoutesRoute
-  '/_authenticate': typeof middlewaresAuthenticateRouteWithChildren
   '/_public-chat': typeof middlewaresPublicChatRouteWithChildren
-  '/_restrict-login-signup': typeof middlewaresRestrictLoginSignupRouteWithChildren
   '/error': typeof errorDefaultErrorRoutesRoute
-  '/_authenticate/_app-layout': typeof app_authenticatedLayoutRouteWithChildren
   '/_public-chat/_chat-layout': typeof app_chatLayoutRouteWithChildren
-  '/_restrict-login-signup/forgot-password': typeof authForgotPasswordRoutesRoute
-  '/_restrict-login-signup/login': typeof authLoginRoutesRoute
-  '/_restrict-login-signup/privacy-policy': typeof publicPrivacyPolicyRoutesRoute
-  '/_authenticate/_app-layout/profile': typeof app_authenticatedProfileRoutesRoute
   '/_public-chat/_chat-layout/chat': typeof app_chatChatScreenRoutesRoute
-  '/_public-chat/_chat-layout/settings': typeof app_chatSettingsRoutesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/error'
-    | '/forgot-password'
-    | '/login'
-    | '/privacy-policy'
-    | '/profile'
-    | '/chat'
-    | '/settings'
+  fullPaths: '/' | '/403' | '/404' | '/500' | '/error' | '/chat'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/error'
-    | '/forgot-password'
-    | '/login'
-    | '/privacy-policy'
-    | '/profile'
-    | '/chat'
-    | '/settings'
+  to: '/' | '/403' | '/404' | '/500' | '/error' | '/chat'
   id:
     | '__root__'
     | '/'
     | '/403'
     | '/404'
     | '/500'
-    | '/_authenticate'
     | '/_public-chat'
-    | '/_restrict-login-signup'
     | '/error'
-    | '/_authenticate/_app-layout'
     | '/_public-chat/_chat-layout'
-    | '/_restrict-login-signup/forgot-password'
-    | '/_restrict-login-signup/login'
-    | '/_restrict-login-signup/privacy-policy'
-    | '/_authenticate/_app-layout/profile'
     | '/_public-chat/_chat-layout/chat'
-    | '/_public-chat/_chat-layout/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -204,9 +107,7 @@ export interface RootRouteChildren {
   error403RoutesRoute: typeof error403RoutesRoute
   error404RoutesRoute: typeof error404RoutesRoute
   error500RoutesRoute: typeof error500RoutesRoute
-  middlewaresAuthenticateRoute: typeof middlewaresAuthenticateRouteWithChildren
   middlewaresPublicChatRoute: typeof middlewaresPublicChatRouteWithChildren
-  middlewaresRestrictLoginSignupRoute: typeof middlewaresRestrictLoginSignupRouteWithChildren
   errorDefaultErrorRoutesRoute: typeof errorDefaultErrorRoutesRoute
 }
 
@@ -219,25 +120,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errorDefaultErrorRoutesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_restrict-login-signup': {
-      id: '/_restrict-login-signup'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof middlewaresRestrictLoginSignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_public-chat': {
       id: '/_public-chat'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof middlewaresPublicChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticate': {
-      id: '/_authenticate'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof middlewaresAuthenticateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/500': {
@@ -268,47 +155,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof indexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_restrict-login-signup/privacy-policy': {
-      id: '/_restrict-login-signup/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof publicPrivacyPolicyRoutesRouteImport
-      parentRoute: typeof middlewaresRestrictLoginSignupRoute
-    }
-    '/_restrict-login-signup/login': {
-      id: '/_restrict-login-signup/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof authLoginRoutesRouteImport
-      parentRoute: typeof middlewaresRestrictLoginSignupRoute
-    }
-    '/_restrict-login-signup/forgot-password': {
-      id: '/_restrict-login-signup/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordRoutesRouteImport
-      parentRoute: typeof middlewaresRestrictLoginSignupRoute
-    }
     '/_public-chat/_chat-layout': {
       id: '/_public-chat/_chat-layout'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof app_chatLayoutRouteImport
       parentRoute: typeof middlewaresPublicChatRoute
-    }
-    '/_authenticate/_app-layout': {
-      id: '/_authenticate/_app-layout'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof app_authenticatedLayoutRouteImport
-      parentRoute: typeof middlewaresAuthenticateRoute
-    }
-    '/_public-chat/_chat-layout/settings': {
-      id: '/_public-chat/_chat-layout/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof app_chatSettingsRoutesRouteImport
-      parentRoute: typeof app_chatLayoutRoute
     }
     '/_public-chat/_chat-layout/chat': {
       id: '/_public-chat/_chat-layout/chat'
@@ -317,52 +169,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof app_chatChatScreenRoutesRouteImport
       parentRoute: typeof app_chatLayoutRoute
     }
-    '/_authenticate/_app-layout/profile': {
-      id: '/_authenticate/_app-layout/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof app_authenticatedProfileRoutesRouteImport
-      parentRoute: typeof app_authenticatedLayoutRoute
-    }
   }
 }
-
-interface app_authenticatedLayoutRouteChildren {
-  app_authenticatedProfileRoutesRoute: typeof app_authenticatedProfileRoutesRoute
-}
-
-const app_authenticatedLayoutRouteChildren: app_authenticatedLayoutRouteChildren =
-  {
-    app_authenticatedProfileRoutesRoute: app_authenticatedProfileRoutesRoute,
-  }
-
-const app_authenticatedLayoutRouteWithChildren =
-  app_authenticatedLayoutRoute._addFileChildren(
-    app_authenticatedLayoutRouteChildren,
-  )
-
-interface middlewaresAuthenticateRouteChildren {
-  app_authenticatedLayoutRoute: typeof app_authenticatedLayoutRouteWithChildren
-}
-
-const middlewaresAuthenticateRouteChildren: middlewaresAuthenticateRouteChildren =
-  {
-    app_authenticatedLayoutRoute: app_authenticatedLayoutRouteWithChildren,
-  }
-
-const middlewaresAuthenticateRouteWithChildren =
-  middlewaresAuthenticateRoute._addFileChildren(
-    middlewaresAuthenticateRouteChildren,
-  )
 
 interface app_chatLayoutRouteChildren {
   app_chatChatScreenRoutesRoute: typeof app_chatChatScreenRoutesRoute
-  app_chatSettingsRoutesRoute: typeof app_chatSettingsRoutesRoute
 }
 
 const app_chatLayoutRouteChildren: app_chatLayoutRouteChildren = {
   app_chatChatScreenRoutesRoute: app_chatChatScreenRoutesRoute,
-  app_chatSettingsRoutesRoute: app_chatSettingsRoutesRoute,
 }
 
 const app_chatLayoutRouteWithChildren = app_chatLayoutRoute._addFileChildren(
@@ -382,33 +197,12 @@ const middlewaresPublicChatRouteWithChildren =
     middlewaresPublicChatRouteChildren,
   )
 
-interface middlewaresRestrictLoginSignupRouteChildren {
-  authForgotPasswordRoutesRoute: typeof authForgotPasswordRoutesRoute
-  authLoginRoutesRoute: typeof authLoginRoutesRoute
-  publicPrivacyPolicyRoutesRoute: typeof publicPrivacyPolicyRoutesRoute
-}
-
-const middlewaresRestrictLoginSignupRouteChildren: middlewaresRestrictLoginSignupRouteChildren =
-  {
-    authForgotPasswordRoutesRoute: authForgotPasswordRoutesRoute,
-    authLoginRoutesRoute: authLoginRoutesRoute,
-    publicPrivacyPolicyRoutesRoute: publicPrivacyPolicyRoutesRoute,
-  }
-
-const middlewaresRestrictLoginSignupRouteWithChildren =
-  middlewaresRestrictLoginSignupRoute._addFileChildren(
-    middlewaresRestrictLoginSignupRouteChildren,
-  )
-
 const rootRouteChildren: RootRouteChildren = {
   indexRoute: indexRoute,
   error403RoutesRoute: error403RoutesRoute,
   error404RoutesRoute: error404RoutesRoute,
   error500RoutesRoute: error500RoutesRoute,
-  middlewaresAuthenticateRoute: middlewaresAuthenticateRouteWithChildren,
   middlewaresPublicChatRoute: middlewaresPublicChatRouteWithChildren,
-  middlewaresRestrictLoginSignupRoute:
-    middlewaresRestrictLoginSignupRouteWithChildren,
   errorDefaultErrorRoutesRoute: errorDefaultErrorRoutesRoute,
 }
 export const routeTree = rootRouteImport

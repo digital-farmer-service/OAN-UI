@@ -93,16 +93,6 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Profile */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/profile")}>
-                  <Link to="/profile" search={(old) => old}>
-                    <User2 className="h-5 w-5" />
-                    <span>Profile</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
               {/* Settings */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/")}>
