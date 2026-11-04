@@ -13,6 +13,6 @@ COPY --from=build /usr/local/app/dist .
 # Add nginx config for SPA routing
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 8081
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 # docker buildx build --platform linux/amd64 -t asia-south1-docker.pkg.dev/s-0-000236-99/moa-bharatvistaar-repo/oan-ui-dev:latest --push .
