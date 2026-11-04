@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // module is re-imported per test so its module-level location flags start clean.
 
 const api = vi.hoisted(() => ({
-	sendUserQuery: vi.fn(async () => ({ qid: "q-1" })),
+	sendUserQuery: vi.fn(async (_query: string) => ({ qid: "q-1" })),
 	sendImageQuery: vi.fn(async () => ({ qid: "q-img-1" })),
 	getSuggestions: vi.fn(async () => []),
 	getLocationData: vi.fn(() => null),
