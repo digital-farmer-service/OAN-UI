@@ -167,7 +167,7 @@ export function AppSidebar() {
                   <div className="h-8 w-8 overflow-hidden rounded-lg bg-muted">
                     <img
                       alt="user"
-                      src="/images/default-avatar.png"
+                      src={`${import.meta.env.BASE_URL}images/default-avatar.png`}
                       className="h-full w-full object-cover"
                     />
                   </div>

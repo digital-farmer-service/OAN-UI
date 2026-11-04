@@ -5,7 +5,7 @@ import { LANGUAGES, THEMES } from "@/components/screens-component/chat-screen/co
 import { LanguageSelectionDropdown } from "@/components/screens-component/chat-screen/components/language-selection-dialog";
 import { resolveTheme, useThemeStore } from "@/hooks/store/theme";
 import logo from "@/assets/biharKrishiLogo.png";
-const langIcon = "/assets/langIcon.svg";
+const langIcon = `${import.meta.env.BASE_URL}assets/langIcon.svg`;
 
 export type ChatHeaderProps = {
 	title: string;

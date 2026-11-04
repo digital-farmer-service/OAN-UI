@@ -22,6 +22,7 @@ const devProxyTarget = loadEnv(process.env.NODE_ENV ?? "development", process.cw
 	.VITE_DEV_PROXY_TARGET;
 // https://vite.dev/config/
 export default defineConfig({
+	base: "/bihar-krishi/",
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src"),

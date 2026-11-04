@@ -1,4 +1,4 @@
-const lockImg = "/assets/lockImg.svg";
+const lockImg = `${import.meta.env.BASE_URL}assets/lockImg.svg`;
 
 export default function AuthError() {
   return (

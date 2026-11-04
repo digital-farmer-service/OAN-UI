@@ -12,7 +12,7 @@ import {
 	type NotificationFeedbackReason
 } from "./notification-feedback-modal";
 
-const bellIcon = "/assets/bell.svg";
+const bellIcon = `${import.meta.env.BASE_URL}assets/bell.svg`;
 
 function unescapeNewlines(text: string): string {
 	return text.replace(/\\n/g, "\n");

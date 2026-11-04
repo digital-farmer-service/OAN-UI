@@ -139,7 +139,7 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
 																alt={faq.question}
 																className="w-full h-full object-cover"
 																onError={(e) => {
-																	(e.target as HTMLImageElement).src = "/images/fallback-farm.jpg";
+																	(e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}images/fallback-farm.jpg`;
 																}}
 															/>
 														</div>

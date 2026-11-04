@@ -6,7 +6,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader } from "@/components";
 
-const lockImg = "/assets/lockImg.svg";
+const lockImg = `${import.meta.env.BASE_URL}assets/lockImg.svg`;
 
 export function ChatShell() {
 	const { language, t } = useLanguage();

@@ -49,6 +49,7 @@ window.addEventListener("vite:preloadError", async (event) => {
 const routeProgress = createRouteProgress();
 const router = createRouter({
 	routeTree,
+	basepath: import.meta.env.BASE_URL,
 	context: { queryClient },
 	defaultPendingComponent: () => (
 		<div className="bg-background flex h-screen w-screen items-center justify-center">

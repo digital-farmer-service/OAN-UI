@@ -58,7 +58,7 @@ export const FAQ_DATA: FAQItem[] = [
 		id: "1",
 		question: "How can I get subsidy for farm machinery?",
 		answer: "Farmers can apply for machinery subsidy through the MahaDBT portal. Subsidy amount depends on machine type, farmer category, and scheme availability.",
-		image: "/faq-machinery.png"
+		image: `${import.meta.env.BASE_URL}faq-machinery.png`
 	},
 	{
 		id: "2",
