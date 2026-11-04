@@ -593,7 +593,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		const responseLanguage = getResponseLanguage(language);
 
 		get().stopTTS();
-		await get().fetchLocation(t);
 
 		const userMessage = makeUserMessage(safeText);
 		set((state) => ({
@@ -770,7 +769,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		}
 
 		get().stopTTS();
-		await get().fetchLocation(t);
 
 		let uploadFile = imageFile;
 		try {

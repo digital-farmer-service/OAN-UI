@@ -9,7 +9,6 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useCallback, useState, useEffect } from "react";
 import { Toast } from "@/components/screens-component/chat-screen/components/toast";
 import { SettingsDrawer } from "@/components/screens-component/chat-screen/components/settings-drawer";
-// import { LocationPermissionDialog } from "@/components/screens-component/chat-screen/components/location-permission-dialog";
 import apiService from "@/lib/api-service";
 import { BiharFooter } from "@/bihar/footer";
 
@@ -47,11 +46,9 @@ function ChatLayout() {
 	const messages = useChatStore((s) => s.messages);
 	const toastData = useChatStore((s) => s.toast);
 	const setToast = useChatStore((s) => s.setToast);
-	const fetchLocation = useChatStore((s) => s.fetchLocation);
 
 	const { language, t } = useLanguage();
 	const [settingsOpen, setSettingsOpen] = useState(false);
-	// const [showLocationPrompt, setShowLocationPrompt] = useState(false);
 
 	useEffect(() => {
 		const cachedLocation = getCachedLocation();
@@ -62,29 +59,7 @@ function ChatLayout() {
 			});
 			void useChatStore.getState().fetchNotifications();
 		}
-
-		navigator.permissions?.query({ name: "geolocation" }).then((result) => {
-			if (result.state === "granted") {
-				if (cachedLocation) {
-					return;
-				}
-				fetchLocation();
-			} else if (result.state === "prompt") {
-				if (cachedLocation) {
-					return;
-				}
-				// setShowLocationPrompt(true);
-				fetchLocation(undefined, { trackBrowserDecision: true });
-			}
-			// "denied" — skip silently
-		}).catch(() => {
-			if (cachedLocation) {
-				return;
-			}
-			// setShowLocationPrompt(true);
-			fetchLocation(undefined, { trackBrowserDecision: true });
-		});
-	}, [fetchLocation]);
+	}, []);
 
 	const handleCloseToast = useCallback(() => {
 		setToast(null);
@@ -161,36 +136,6 @@ function ChatLayout() {
 				open={settingsOpen}
 				onOpenChange={setSettingsOpen}
 			/>
-
-			{/* Custom location permission popup disabled — using native browser prompt instead
-			{showLocationPrompt && (
-				<LocationPermissionDialog
-					onAllow={() => {
-						apiService.trackUiTelemetryEvent({
-							event_name: "location_allowed",
-							category: "location",
-							metadata: {
-								action: "allow"
-							}
-						});
-						setShowLocationPrompt(false);
-						fetchLocation(undefined, { trackBrowserDecision: true });
-					}}
-					onDismiss={(reason) => {
-						apiService.trackUiTelemetryEvent({
-							event_name: "location_denied",
-							category: "location",
-							metadata: {
-								action: "deny",
-								reason
-							}
-						});
-						setShowLocationPrompt(false);
-					}}
-				/>
-			)}
-			*/}
-
 		</div>
 	);
 }
