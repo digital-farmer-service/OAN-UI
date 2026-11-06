@@ -22,8 +22,9 @@ import type { Suggestion } from "../api/suggestions-api";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChatStore } from "@/hooks/store/chat";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useCanCapture } from "@/hooks/use-can-capture";
 import { environment } from "@/lib/config/environment";
+import { handleCameraResult } from "./pest-upload";
 
 const MAX_CLIENT_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/jpg"]);
@@ -72,7 +73,7 @@ export function ChatInput({
 	const { t } = useLanguage();
 	const { user } = useAuth();
 	const setToast = useChatStore((s) => s.setToast);
-	const isMobile = useIsMobile();
+	const canCapture = useCanCapture();
 	const isUnauthenticated = !user;
 	const [isPestDialogOpen, setIsPestDialogOpen] = useState(false);
 	const [pestImage, setPestImage] = useState<File | null>(null);
@@ -247,15 +248,30 @@ export function ChatInput({
 		});
 	}
 
+	function acceptPickedFile(file: File, input: HTMLInputElement) {
+		if (validateSelectedImage(file)) setPestFile(file);
+		input.value = "";
+	}
+
 	function onPestFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
 		const file = e.target.files?.[0];
 		if (!file) return;
-		if (!validateSelectedImage(file)) {
+		acceptPickedFile(file, e.target);
+	}
+
+	function onPestCameraPicked(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = handleCameraResult(e.target.files, { setToast, t });
+		if (!file) {
 			e.target.value = "";
 			return;
 		}
-		setPestFile(file);
-		e.target.value = "";
+		acceptPickedFile(file, e.target);
+	}
+
+	function openPestDialog() {
+		// Drop focus from the chat textarea so the soft keyboard closes and the dialog gets the full frame.
+		taRef.current?.blur();
+		setIsPestDialogOpen(true);
 	}
 
 	function validateSelectedImage(file: File) {
@@ -333,9 +349,11 @@ export function ChatInput({
 	return (
 		<div className="bg-[#FFFFFF] dark:bg-[var(--inputBg-dark)] backdrop-blur supports-[backdrop-filter]:bg-[#FFFFFF] dark:supports-[backdrop-filter]:bg-[var(--inputBg-dark)]">
 			<Dialog open={isPestDialogOpen} onOpenChange={setIsPestDialogOpen}>
-				<DialogContent className="max-w-md overflow-hidden rounded-2xl p-0 gap-0 bg-white dark:bg-[var(--background)] border shadow-xl" showCloseButton={false}>
+				{/* Fits any frame (desktop iframe, phone iframe, full-screen WebView): the height is bounded by
+				    the viewport, the body scrolls, and the header/footer stay pinned. */}
+				<DialogContent className="flex max-h-[calc(100svh-1rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 gap-0 bg-white dark:bg-[var(--background)] border shadow-xl" showCloseButton={false}>
 					{/* Warm amber header — softer than before */}
-					<DialogHeader className="gap-0">
+					<DialogHeader className="shrink-0 gap-0">
 						<div className="bg-gradient-to-br from-amber-400 to-amber-500 px-6 py-5 text-white">
 							<div className="flex items-center gap-2 mb-1">
 								<Camera className="h-5 w-5 opacity-90" />
@@ -349,7 +367,7 @@ export function ChatInput({
 						</div>
 					</DialogHeader>
 
-					<div className="px-6 py-5 space-y-5">
+					<div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-5 space-y-5">
 						{/* Refined amber note with icon */}
 						<div className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-100">
 							<svg className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -370,7 +388,7 @@ export function ChatInput({
 									<img
 										src={pestImagePreview}
 										alt={pestImage?.name || "Crop image preview"}
-										className="max-h-56 w-full object-contain p-3"
+										className="max-h-40 sm:max-h-56 w-full object-contain p-3"
 									/>
 									<button
 										type="button"
@@ -382,8 +400,8 @@ export function ChatInput({
 								</div>
 							) : (
 								<div className="rounded-xl border-2 border-dashed border-amber-200/70 bg-amber-50/30 px-4 py-8 transition-all hover:border-amber-300 hover:bg-amber-50/50 dark:border-amber-900/30 dark:bg-amber-950/10">
-									<div className={cn("flex items-center justify-center", isMobile ? "gap-8" : "gap-4 flex-col")}>
-										{isMobile && (
+									<div className={cn("flex items-center justify-center", canCapture ? "gap-8" : "gap-4 flex-col")}>
+										{canCapture && (
 											<button
 												type="button"
 												onClick={openPestApiPicker}
@@ -423,7 +441,7 @@ export function ChatInput({
 							accept="image/jpeg,image/png,image/jpg"
 							capture="environment"
 							className="hidden"
-							onChange={onPestFilePicked}
+							onChange={onPestCameraPicked}
 						/>
 						<input
 							ref={pestGalleryInputRef}
@@ -435,7 +453,7 @@ export function ChatInput({
 					</div>
 
 					{/* Footer buttons */}
-					<DialogFooter className="border-t border-border/50 px-6 py-4 gap-3 sm:justify-end bg-muted/20">
+					<DialogFooter className="shrink-0 border-t border-border/50 px-6 py-4 gap-3 sm:justify-end bg-muted/20">
 						<Button
 							type="button"
 							variant="outline"
@@ -567,7 +585,7 @@ export function ChatInput({
     <Button
       type="button"
       disabled={disabled || isLoading || isUnauthenticated}
-      onClick={() => setIsPestDialogOpen(true)}
+      onClick={openPestDialog}
       className={cn(
         "h-12 w-12 rounded-full border border-transparent bg-transparent text-amber-700 hover:bg-amber-50 hover:text-amber-900 dark:text-amber-200 dark:hover:bg-amber-950/40 dark:hover:text-amber-100 shadow-none p-0",
         disabled || isLoading || isUnauthenticated ? "opacity-50 cursor-not-allowed" : "cursor-pointer"

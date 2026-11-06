@@ -297,7 +297,8 @@
     "imageTooLarge": "Image too large. Max 10 MB.",
     "invalidFormat": "Invalid image format. Use JPEG or PNG.",
     "imageFormatHint": "Only JPEG and PNG images are supported. The image will be optimized before upload.",
-    "processingFailed": "Could not process the image. Please try another photo."
+    "processingFailed": "Could not process the image. Please try another photo.",
+    "cameraUnavailable": "Could not open the camera. Please try again or choose a photo from the gallery."
   },
   "pestApi": {
     "trigger": "Pest & Disease Detection",
