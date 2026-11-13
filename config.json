@@ -59,7 +59,8 @@
   },
   "languages": [
     { "code": "hi", "name": "हिंदी", "nativeName": "हिंदी", "icon": "अ" },
-    { "code": "en", "name": "English", "nativeName": "English", "icon": "अ" }
+    { "code": "en", "name": "English", "nativeName": "English", "icon": "अ" },
+    { "code": "mai", "name": "मैथिली", "nativeName": "मैथिली", "icon": "अ" }
   ],
   "defaultLanguage": "en",
   "languageTexts": {
