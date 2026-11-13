@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { makeT, visibleText } from "../ui-parity/test-i18n";
 
-// Owner decision: the language picker offers ONLY English and Hindi.
+// Owner decision: the language picker offers ONLY English, Hindi and Maithili.
 
 vi.mock("@/components/LanguageProvider", () => ({
 	useLanguage: () => ({ language: "en", t: makeT("en"), setLanguage: () => {} })
@@ -26,7 +26,7 @@ vi.mock("@/components/ui/popover", () => {
 
 import { LanguageSelectionDropdown } from "@/components/screens-component/chat-screen/components/language-selection-dialog";
 
-const REMOVED_NATIVE_NAMES = ["বাংলা", "తెలుగు", "தமிழ்", "ગુજરાતી", "ಕನ್ನಡ", "മലയാളം", "অসমীয়া", "मराठी", "मैथिली"];
+const REMOVED_NATIVE_NAMES = ["বাংলা", "తెలుగు", "தமிழ்", "ગુજરાતી", "ಕನ್ನಡ", "മലയാളം", "অসমীয়া", "मराठी"];
 
 function renderPicker(): string {
 	return renderToStaticMarkup(
@@ -40,16 +40,16 @@ function buttonLabels(html: string): string[] {
 	return [...html.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/g)].map((m) => visibleText(m[1] ?? ""));
 }
 
-describe("language picker offers only English and Hindi", () => {
+describe("language picker offers only English, Hindi and Maithili", () => {
 	const html = renderPicker();
 	const labels = buttonLabels(html);
 
-	it("renders exactly two language buttons", () => {
-		expect(labels).toHaveLength(2);
+	it("renders exactly three language buttons", () => {
+		expect(labels).toHaveLength(3);
 	});
 
-	it("labels them English and हिंदी", () => {
-		expect(new Set(labels)).toEqual(new Set(["English", "हिंदी"]));
+	it("labels them English, हिंदी and मैथिली", () => {
+		expect(new Set(labels)).toEqual(new Set(["English", "हिंदी", "मैथिली"]));
 	});
 
 	it("shows none of the removed languages", () => {

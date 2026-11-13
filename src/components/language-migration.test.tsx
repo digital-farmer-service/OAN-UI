@@ -76,6 +76,13 @@ describe("legacy `language` key migration", () => {
 		expect(storage.getItem("app_language")).toBe("en");
 	});
 
+	it("migrates a legacy `mai` (enabled) into app_language when app_language is unset", async () => {
+		const { language, storage } = await renderStartupLanguage({ language: "mai" });
+
+		expect(language).toBe("mai");
+		expect(storage.getItem("app_language")).toBe("mai");
+	});
+
 	it("ignores an unsupported legacy code", async () => {
 		const { language, storage } = await renderStartupLanguage({ language: "mr" });
 

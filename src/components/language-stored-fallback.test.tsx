@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// Owner decision: only `hi` and `en` are supported. A browser that stored another code in
+// Owner decision: `hi`, `en` and `mai` are supported. A browser that stored another code in
 // `app_language` (e.g. `bn` picked before the cut) must not keep that language: at startup
 // LanguageProvider falls back to the default (`en`). Supported stored values are kept.
 // Same harness as language-migration.test.tsx: in-memory localStorage, fresh module, SSR render
@@ -46,7 +46,7 @@ afterEach(() => {
 });
 
 describe("stored app_language is applied only when supported", () => {
-	it.each(["hi", "en"])("keeps a stored supported language %s", async (code) => {
+	it.each(["hi", "en", "mai"])("keeps a stored supported language %s", async (code) => {
 		expect(await renderStartupLanguage({ app_language: code })).toBe(code);
 	});
 
@@ -54,7 +54,7 @@ describe("stored app_language is applied only when supported", () => {
 		expect(await renderStartupLanguage({})).toBe("en");
 	});
 
-	it.each(["bn", "te", "ta", "gu", "kn", "ml", "as", "mr", "mai"])(
+	it.each(["bn", "te", "ta", "gu", "kn", "ml", "as", "mr"])(
 		"falls back to en for a stored removed language %s",
 		async (code) => {
 			expect(await renderStartupLanguage({ app_language: code })).toBe("en");
