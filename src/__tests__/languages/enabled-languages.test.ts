@@ -98,3 +98,37 @@ describe("translation key parity: mai covers en", () => {
 		expect(keyPaths(en as Record<string, unknown>).filter((k) => !maiPaths.has(k))).toEqual([]);
 	});
 });
+
+// mai.json predates the Bihar Krishi rebrand (2ab4c76). Its app titles must match hi.json's and
+// carry no trace of the old brand names. Comparing with hi too catches a future hi rebrand mai misses.
+type AppTitles = { appTitle?: unknown; toast?: { appTitle?: unknown } };
+const OLD_BRANDS = ["भारती", "महाविस्तार"];
+
+describe("Maithili carries Bihar Krishi branding", () => {
+	const maiT = mai as AppTitles;
+	const hiT = hi as AppTitles;
+
+	it('mai appTitle is "बिहार कृषि - AI"', () => {
+		expect(maiT.appTitle).toBe("बिहार कृषि - AI");
+	});
+
+	it("mai appTitle equals hi appTitle", () => {
+		expect(maiT.appTitle).toBe(hiT.appTitle);
+	});
+
+	it('mai toast.appTitle is "बिहार कृषि"', () => {
+		expect(maiT.toast?.appTitle).toBe("बिहार कृषि");
+	});
+
+	it("mai toast.appTitle equals hi toast.appTitle", () => {
+		expect(maiT.toast?.appTitle).toBe(hiT.toast?.appTitle);
+	});
+
+	it("neither mai app title contains an old brand name", () => {
+		const titles = { appTitle: maiT.appTitle, "toast.appTitle": maiT.toast?.appTitle };
+		const hits = Object.entries(titles).flatMap(([key, value]) =>
+			OLD_BRANDS.filter((brand) => String(value).includes(brand)).map((brand) => `${key}: ${brand}`)
+		);
+		expect(hits).toEqual([]);
+	});
+});
