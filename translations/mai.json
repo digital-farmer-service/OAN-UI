@@ -15,7 +15,7 @@
   "poweredBy": "द्वारा संचालित",
   "helpYouToday": "आइ हम अहाँक की मदति क' सकैत छी?",
   "recordingListening": "[botName] सुनि रहल छथि, कृपया बाजब शुरू करू।",
-  "appTitle": "भारती",
+  "appTitle": "बिहार कृषि - AI",
   "questions": [
     {
       "key": "schemes.info.pm_kisan",
@@ -238,7 +238,7 @@
       "description": "हम सभ एखन बहुत रास अनुरोध पर काज क' रहल छी। कृपया किछु क्षणमे फेर प्रयास करू।"
     },
     "copyFailed": "संदेश कॉपी नहि भ' सकल। कृपया फेर प्रयास करू।",
-    "appTitle": "महाविस्तार"
+    "appTitle": "बिहार कृषि"
   },
   "settingsPage": {
     "title": "सेटिंग्स",
