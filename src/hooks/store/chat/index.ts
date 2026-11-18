@@ -674,7 +674,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			if (isRateLimitError) {
 				const limitMessage = t
 					? t("limitMessage")
-					: "Dear user, you have reached the allotted question limit for today. You may continue to explore the other features of the Bharat-VISTAAR app.";
+					: "Dear user, you have reached the allotted question limit for Bharat Vistaar Powered Bihar Krishi Bot today. You may continue to explore the other features of the Bihar Krishi app.";
 				set((state) => ({
 					messages: (() => {
 						const backendQid = getErrorQid(error);
@@ -869,7 +869,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			if (isRateLimitError) {
 				const limitMessage = t
 					? t("limitMessage")
-					: "Dear user, you have reached the allotted question limit for today. You may continue to explore the other features of the Bharat-VISTAAR app.";
+					: "Dear user, you have reached the allotted question limit for Bharat Vistaar Powered Bihar Krishi Bot today. You may continue to explore the other features of the Bihar Krishi app.";
 				set((state) => ({
 					messages: (() => {
 						const backendQid = getErrorQid(error);
