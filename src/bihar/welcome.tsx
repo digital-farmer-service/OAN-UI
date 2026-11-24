@@ -4,7 +4,7 @@ import welcomeImage from "@/assets/welcome.png";
 
 /**
  * Old empty-chat screen (80adef9 src/components/EmptyStateScreen.tsx:30-80): the welcome image and
- * "How can I help you today?" only. No quick-action cards, no ticker.
+ * the welcome greeting (DFS-4516) only. No quick-action cards, no ticker.
  */
 export function BiharWelcome() {
 	const { t } = useLanguage();
@@ -21,7 +21,7 @@ export function BiharWelcome() {
 					<img src={welcomeImage} alt="Welcome" className="h-full w-full object-contain" />
 				</div>
 				<p className={isMobile ? "w-full text-center text-[15px]" : "w-full text-center text-base"}>
-					{t("helpYouToday") as string}
+					{t("welcome") as string}
 				</p>
 			</div>
 		</div>

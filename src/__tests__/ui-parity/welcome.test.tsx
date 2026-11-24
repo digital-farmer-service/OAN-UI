@@ -2,22 +2,23 @@ import type { ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { type TestLanguage, translationValue, visibleText } from "./test-i18n";
+import { type I18nLanguage, translationValue, visibleText } from "./test-i18n";
 import { setSsrStore } from "./test-ssr-store";
 
 // P4.8.8 (doc 70 §2.2 Empty state, §3 Empty state, §4 Quick-action cards/Ticker; owner Q3):
 // the empty chat shows the old welcome screen (80adef9 src/components/EmptyStateScreen.tsx:30-80):
-// the welcome image plus t("helpYouToday") only. No quick-action cards, no ticker.
+// the welcome image plus t("welcome") only. No quick-action cards, no ticker.
+// DFS-4516: the welcome line is the full farming-assistant greeting in en, hi and mai.
 //
 // Seams fixed here:
 //   - `BiharWelcome` (no required props) exported from `src/bihar/welcome.tsx`; renders an <img>
-//     whose src contains "welcome" and the t("helpYouToday") text, and no <button>
-//   - `helpYouToday` top-level key in translations/en.json ("How can I help you today?") and hi.json
+//     whose src contains "welcome" and the t("welcome") text, and no <button>
+//   - `welcome` top-level key in translations/en.json, hi.json and mai.json (DFS-4516 wording)
 //   - ChatShell passes the Bihar welcome (not WelcomePanel) to MessageList when there are no
 //     messages, so the store's quickActions are not rendered
 //   - `env.uiTicker` is 0 (no ticker variant renders)
 
-const ui = vi.hoisted(() => ({ lang: "en" as "en" | "hi", mobile: false }));
+const ui = vi.hoisted(() => ({ lang: "en" as I18nLanguage, mobile: false }));
 
 vi.mock("@/components/LanguageProvider", async () => {
 	const { makeT } = await import("./test-i18n");
@@ -57,7 +58,7 @@ interface WelcomeModule {
 
 const WELCOME_MODULE = "../../bihar/welcome";
 
-async function renderWelcome(language: TestLanguage): Promise<string> {
+async function renderWelcome(language: I18nLanguage): Promise<string> {
 	ui.lang = language;
 	const { BiharWelcome } = (await import(/* @vite-ignore */ WELCOME_MODULE)) as WelcomeModule;
 	return renderToStaticMarkup(<BiharWelcome />);
@@ -82,18 +83,21 @@ beforeEach(() => {
 });
 
 describe("translations for the welcome screen", () => {
-	it("has helpYouToday in en and hi", () => {
-		expect(translationValue("en", "helpYouToday")).toBe("How can I help you today?");
-		expect(translationValue("hi", "helpYouToday")).toBe("मैं आज आपकी कैसे मदद कर सकता हूँ?");
+	it.each([
+		["en", "Hello! I am your farming assistant. How can I help you today?"],
+		["hi", "नमस्कार! मैं आपका कृषि सहायक हूँ। आज मैं आपकी किस प्रकार सहायता कर सकता हूँ?"],
+		["mai", "प्रणाम! हम अहाँक कृषि सहायक छी। आइ हम अहाँक की मदति कऽ सकैत छी?"]
+	] as const)("%s: welcome is the DFS-4516 greeting", (lang, text) => {
+		expect(translationValue(lang, "welcome")).toBe(text);
 	});
 });
 
 describe("BiharWelcome (P4.8.8)", () => {
-	it.each(["en", "hi"] as const)("%s: welcome image and the helpYouToday text", async (lang) => {
+	it.each(["en", "hi", "mai"] as const)("%s: welcome image and the welcome text", async (lang) => {
 		const html = await renderWelcome(lang);
 
 		expect(html).toMatch(/<img[^>]*src="[^"]*welcome[^"]*"/i);
-		expect(visibleText(html)).toContain(translationValue(lang, "helpYouToday") as string);
+		expect(visibleText(html)).toContain(translationValue(lang, "welcome") as string);
 	});
 
 	it("renders no buttons (no quick-action cards)", async () => {
@@ -108,7 +112,7 @@ describe("ChatShell empty state (P4.8.8)", () => {
 		const html = renderToStaticMarkup(<ChatShell />);
 
 		expect(html).toMatch(/<img[^>]*src="[^"]*welcome[^"]*"/i);
-		expect(visibleText(html)).toContain("How can I help you today?");
+		expect(visibleText(html)).toContain("Hello! I am your farming assistant. How can I help you today?");
 		expect(html).not.toContain("QA-PROBE");
 	});
 

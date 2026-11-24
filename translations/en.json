@@ -1,5 +1,5 @@
 {
-  "welcome": "Namaste! I am your farming assistant. How can I help you today?",
+  "welcome": "Hello! I am your farming assistant. How can I help you today?",
   "inputPlaceholder": "Ask your question...",
   "chatMicHint": "Tap the microphone button to ask your question",
   "startRecording": "Start recording",
@@ -233,13 +233,13 @@
     },
     "rateLimitError": {
       "title": "Please Wait",
-      "description": "Dear user, you have reached the allotted question limit for today. You may continue to explore the other features of the Bharat-VISTAAR app."
+      "description": "Dear Farmer, you have reached the allotted question limit for today. You may continue to explore the other features of the Bihar Krishi app."
     },
     "copyFailed": "Could not copy the message. Please try again."
   },
   "maintenance": {
     "title": "Under Maintenance",
-    "heading": "Bharat-VISTAAR",
+    "heading": "Bihar Krishi - AI",
     "subheading": "Under Maintenance",
     "message": "We're currently performing scheduled maintenance to improve your experience. We'll be back shortly.",
     "thankyou": "Thank you for your patience!",
@@ -275,7 +275,7 @@
       "other": "Other issue"
     }
   },
-  "limitMessage": "Dear user, you have reached the allotted question limit for Bharat Vistaar Powered Bihar Krishi Bot today. You may continue to explore the other features of the Bihar Krishi app.",
+  "limitMessage": "Dear Farmer, you have reached the allotted question limit for today. You may continue to explore the other features of the Bihar Krishi app.",
   "chatErrorMessage": "Sorry, there was an error processing your request. Please try again.",
   "auth": {
     "loginRequired": "Login required",
